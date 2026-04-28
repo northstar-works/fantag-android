@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext HTTP to local network IPs (e.g. 192.168.x.x, 10.x.x.x) -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.1.1</domain>
+        <!-- Add your home server IP here if needed, e.g.: -->
+        <!-- <domain includeSubdomains="false">192.168.1.100</domain> -->
+    </domain-config>
+    <!-- All other traffic (your public tplinkdns domain) uses HTTPS by default -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <!--
+        To add local HTTP support for your home server IP:
+        1. Open this file in Android Studio
+        2. Add a <domain> entry for your server IP (e.g. 192.168.1.100)
+        3. Rebuild the APK
+
+        For private IP ranges without a domain, you can also do:
+        <domain-config cleartextTrafficPermitted="true">
+            <domain includeSubdomains="true">10.0.0.0</domain>
+            <domain includeSubdomains="true">172.16.0.0</domain>
+            <domain includeSubdomains="true">192.168.0.0</domain>
+        </domain-config>
+    -->
+</network-security-config>

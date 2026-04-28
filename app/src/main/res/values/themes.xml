@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- FANTAG uses a dark slate theme matching the web app -->
+    <style name="Theme.FANTAG" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/fantag_green</item>
+        <item name="colorPrimaryVariant">@color/fantag_green_dark</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">@color/fantag_blue</item>
+        <item name="colorSecondaryVariant">@color/fantag_blue_dark</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="android:colorBackground">@color/fantag_bg_dark</item>
+        <item name="colorSurface">@color/fantag_surface_dark</item>
+        <item name="colorOnSurface">@color/toolbar_text</item>
+        <item name="colorOnSurfaceVariant">#94a3b8</item>
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="android:windowBackground">@color/fantag_bg_dark</item>
+        <item name="android:statusBarColor">@color/fantag_bg_dark</item>
+        <item name="android:navigationBarColor">@color/fantag_bg_dark</item>
+
+        <!-- Toolbar -->
+        <item name="actionBarStyle">@style/FANTAGToolbar</item>
+        <item name="toolbarStyle">@style/FANTAGToolbar</item>
+    </style>
+
+    <style name="FANTAGToolbar" parent="Widget.AppCompat.ActionBar.Solid">
+        <item name="android:background">@color/toolbar_bg</item>
+        <item name="titleTextStyle">@style/FANTAGToolbarTitle</item>
+        <item name="subtitleTextStyle">@style/FANTAGToolbarSubtitle</item>
+        <item name="elevation">4dp</item>
+    </style>
+
+    <style name="FANTAGToolbarTitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@color/toolbar_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="FANTAGToolbarSubtitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textColor">#64748b</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- Splash/loading screen theme -->
+    <style name="Theme.FANTAG.Splash" parent="Theme.FANTAG">
+        <item name="android:windowBackground">@color/fantag_bg_dark</item>
+    </style>
+
+</resources>

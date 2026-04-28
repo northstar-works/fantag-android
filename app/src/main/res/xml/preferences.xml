@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Server">
+
+        <EditTextPreference
+            android:key="server_url"
+            android:title="FANTAG Server URL"
+            android:summary="https://fantag.sidscri.tplinkdns.com"
+            android:defaultValue="https://fantag.sidscri.tplinkdns.com"
+            android:inputType="textUri"
+            android:dialogTitle="Server URL"
+            android:dialogMessage="Enter your FANTAG server address. Use https:// for remote access or http:// for local network."
+            app:useSimpleSummaryProvider="false" />
+
+        <Preference
+            android:key="reset_url"
+            android:title="Reset to Default URL"
+            android:summary="Restore https://fantag.sidscri.tplinkdns.com" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Data">
+
+        <Preference
+            android:key="clear_cache"
+            android:title="Clear App Cache"
+            android:summary="Clears WebView cache and storage. You will need to log in again if applicable." />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="About">
+
+        <Preference
+            android:key="app_version"
+            android:title="App Version"
+            android:selectable="false" />
+
+        <Preference
+            android:key="app_info"
+            android:title="FANTAG"
+            android:summary="Fantasy baseball roster tracker by Northstar Labs. Self-hosted FastAPI + React backend."
+            android:selectable="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

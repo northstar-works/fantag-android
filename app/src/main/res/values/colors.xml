@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FANTAG brand colors matching the web UI -->
+    <color name="fantag_green">#10b981</color>
+    <color name="fantag_green_dark">#059669</color>
+    <color name="fantag_blue">#3b82f6</color>
+    <color name="fantag_blue_dark">#2563eb</color>
+    <color name="fantag_bg_dark">#0f172a</color>
+    <color name="fantag_surface_dark">#1e293b</color>
+    <color name="fantag_surface_light">#f8fafc</color>
+
+    <!-- Toolbar -->
+    <color name="toolbar_bg">#0f172a</color>
+    <color name="toolbar_text">#f1f5f9</color>
+
+    <!-- Material theme seeds -->
+    <color name="md_theme_primary">#10b981</color>
+    <color name="md_theme_onPrimary">#ffffff</color>
+    <color name="md_theme_primaryContainer">#d1fae5</color>
+    <color name="md_theme_onPrimaryContainer">#064e3b</color>
+    <color name="md_theme_secondary">#3b82f6</color>
+    <color name="md_theme_onSecondary">#ffffff</color>
+    <color name="md_theme_background">#0f172a</color>
+    <color name="md_theme_onBackground">#f1f5f9</color>
+    <color name="md_theme_surface">#1e293b</color>
+    <color name="md_theme_onSurface">#f1f5f9</color>
+    <color name="md_theme_surfaceVariant">#334155</color>
+    <color name="md_theme_onSurfaceVariant">#94a3b8</color>
+    <color name="md_theme_error">#ef4444</color>
+    <color name="md_theme_onError">#ffffff</color>
+
+    <!-- Light theme overrides -->
+    <color name="md_theme_light_background">#f8fafc</color>
+    <color name="md_theme_light_surface">#ffffff</color>
+    <color name="md_theme_light_onBackground">#0f172a</color>
+    <color name="md_theme_light_onSurface">#0f172a</color>
+</resources>
