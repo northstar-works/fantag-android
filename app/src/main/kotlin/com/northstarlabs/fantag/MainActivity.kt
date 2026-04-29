@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "FANTAG"
         const val PREF_SERVER_URL = "server_url"
-        const val DEFAULT_URL = "https://fantag.sidscri.tplinkdns.com"
+        const val DEFAULT_URL = "http://sidscri.from-tx.com"
     }
 
     // File chooser for screenshot imports
