@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
         ws.mediaPlaybackRequiresUserGesture = false
 
         // User-agent: identify as FANTAG Android
-        ws.userAgentString = "${ws.userAgentString} FANTAGAndroid/${BuildConfig.VERSION_NAME}"
+        ws.userAgentString = "${ws.userAgentString} FANTAGAndroid/3.2.7"
 
         wv.webViewClient = FantagWebViewClient()
         wv.webChromeClient = FantagWebChromeClient()
