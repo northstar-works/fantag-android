@@ -1,0 +1,3 @@
+keytool -genkey -v -keystore C:\Users\Sidscri\keystore\northstar-labs.jks -alias fantag -keyalg RSA -keysize 2048 -validity 10000 -storepass 0888220 -keypass 0888220 -dname "CN=Sidney, O=Northstar Labs, C=US"
+
+keytool -storepasswd -keystore C:\Users\Sidscri\Documents\GitHub\keystore\northstar-labs.jks

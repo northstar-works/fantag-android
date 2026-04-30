@@ -1,4 +1,4 @@
-package com.northstarlabs.fantag
+package com.northstarlabs.fantag_4
 
 import android.os.Bundle
 import android.text.InputType
