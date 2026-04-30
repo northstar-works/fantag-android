@@ -2,7 +2,7 @@
 <resources>
 
     <!-- FANTAG uses a dark slate theme matching the web app -->
-    <style name="Theme.FANTAG" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.FANTAG" parent="Theme.Material3.DayNight">
         <item name="colorPrimary">@color/fantag_green</item>
         <item name="colorPrimaryVariant">@color/fantag_green_dark</item>
         <item name="colorOnPrimary">@android:color/white</item>
