@@ -80,7 +80,7 @@ class SettingsActivity : AppCompatActivity() {
 
             // App version info
             val versionPref = findPreference<Preference>("app_version")
-            versionPref?.summary = "v3.2.7 (build 1)"
+            versionPref?.summary = "v3.2.7 (build 3)"
 
             // Clear WebView cache
             val clearCachePref = findPreference<Preference>("clear_cache")
