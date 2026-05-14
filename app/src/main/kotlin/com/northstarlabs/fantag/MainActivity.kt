@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "FANTAG"
         const val PREF_SERVER_URL = "server_url"
+        const val PREF_ENABLE_PUSH = "enable_push"
         const val DEFAULT_URL = "http://sidscri.from-tx.com"
     }
 
@@ -54,12 +55,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            PushRegistrar.registerCurrentToken(this, force = true)
+        } else {
+            Toast.makeText(this, "Android notification permission is off; Fantag alerts will only show inside the app.", Toast.LENGTH_LONG).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+        FantagNotifications.createChannels(this)
+        requestNotificationPermissionIfNeeded()
+        PushRegistrar.registerCurrentToken(this)
         setupWebView()
         setupSwipeRefresh()
 
@@ -95,6 +109,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     // ── WebView Setup ──────────────────────────────────────────────────────────
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -125,8 +147,9 @@ class MainActivity : AppCompatActivity() {
         ws.mediaPlaybackRequiresUserGesture = false
 
         // User-agent: identify as FANTAG Android
-        ws.userAgentString = "${ws.userAgentString} FANTAGAndroid/3.2.7"
+        ws.userAgentString = "${ws.userAgentString} FANTAGAndroid/${BuildConfig.VERSION_NAME}"
 
+        wv.addJavascriptInterface(FantagAndroidBridge(this), "FantagAndroid")
         wv.webViewClient = FantagWebViewClient()
         wv.webChromeClient = FantagWebChromeClient()
         wv.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
@@ -219,6 +242,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         binding.webView.onResume()
+        PushRegistrar.registerCurrentToken(this)
     }
 
     override fun onPause() {

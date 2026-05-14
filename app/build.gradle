@@ -11,8 +11,8 @@ android {
         applicationId "com.northstarlabs.fantag"
         minSdk 26
         targetSdk 35
-        versionCode 4
-        versionName "2.0.3"
+        versionCode 5
+        versionName "3.2.8-b64-a5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -46,4 +46,17 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.webkit:webkit:1.11.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
+
+    // Firebase Cloud Messaging for Android push notifications.
+    // This compiles without google-services.json; runtime registration is skipped gracefully
+    // until a Firebase config is added to app/google-services.json.
+    implementation platform('com.google.firebase:firebase-bom:33.5.1')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+}
+
+
+// Apply Firebase config generation only when the private config file exists.
+// This keeps open/dev builds from failing while still enabling real FCM builds.
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
 }
