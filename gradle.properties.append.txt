@@ -1,0 +1,3 @@
+
+# Suppress AGP warning for compileSdk 35 on AGP 8.3.2. This is only a warning suppressor.
+android.suppressUnsupportedCompileSdk=35

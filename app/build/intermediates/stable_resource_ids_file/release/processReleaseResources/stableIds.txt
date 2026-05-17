@@ -1,8 +1,0 @@
-com.northstarlabs.fantag:xml/network_security_config = 0x7f050000
-com.northstarlabs.fantag:style/AppTheme = 0x7f040000
-com.northstarlabs.fantag:string/app_name = 0x7f030000
-com.northstarlabs.fantag:drawable/launch_background = 0x7f020001
-com.northstarlabs.fantag:color/fantag_primary_dark = 0x7f010002
-com.northstarlabs.fantag:color/fantag_primary = 0x7f010001
-com.northstarlabs.fantag:drawable/ic_launcher = 0x7f020000
-com.northstarlabs.fantag:color/fantag_accent = 0x7f010000
