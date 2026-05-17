@@ -2,7 +2,7 @@
     name="release"
     package="com.northstarlabs.fantag"
     minSdkVersion="26"
-    targetSdkVersion="35"
+    targetSdkVersion="34"
     mergedManifest="build\intermediates\merged_manifest\release\processReleaseMainManifest\AndroidManifest.xml"
     manifestMergeReport="build\outputs\logs\manifest-merger-release-report.txt"
     proguardFiles="build\intermediates\default_proguard_files\global\proguard-android-optimize.txt-8.7.3;proguard-rules.pro"

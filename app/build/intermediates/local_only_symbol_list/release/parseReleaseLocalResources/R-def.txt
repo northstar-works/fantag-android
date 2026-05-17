@@ -1,5 +1,10 @@
 R_DEF: Internal format may change without notice
 local
+color fantag_accent
+color fantag_primary
+color fantag_primary_dark
 drawable ic_launcher
+drawable launch_background
+string app_name
 style AppTheme
 xml network_security_config

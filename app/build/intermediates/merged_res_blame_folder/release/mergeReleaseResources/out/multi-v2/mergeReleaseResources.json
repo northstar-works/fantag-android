@@ -4,6 +4,40 @@
             "outputFile": "com.northstarlabs.fantag.app-release-4:/values_values.arsc.flat",
             "map": [
                 {
+                    "source": "C:\\Users\\Sidscri\\Documents\\GitHub\\fantag-android\\app\\src\\main\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "1",
+                        "startColumns": "4",
+                        "startOffsets": "16",
+                        "endColumns": "43",
+                        "endOffsets": "55"
+                    },
+                    "to": {
+                        "startLines": "5",
+                        "startColumns": "4",
+                        "startOffsets": "206",
+                        "endColumns": "43",
+                        "endOffsets": "245"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Sidscri\\Documents\\GitHub\\fantag-android\\app\\src\\main\\res\\values\\colors.xml",
+                    "from": {
+                        "startLines": "3,1,2",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "119,16,65",
+                        "endColumns": "47,48,53",
+                        "endOffsets": "162,60,114"
+                    },
+                    "to": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,103,152",
+                        "endColumns": "47,48,53",
+                        "endOffsets": "98,147,201"
+                    }
+                },
+                {
                     "source": "C:\\Users\\Sidscri\\Documents\\GitHub\\fantag-android\\app\\src\\main\\res\\values\\styles.xml",
                     "from": {
                         "startLines": "1",
@@ -11,15 +45,15 @@
                         "startOffsets": "16",
                         "endLines": "8",
                         "endColumns": "12",
-                        "endOffsets": "467"
+                        "endOffsets": "531"
                     },
                     "to": {
-                        "startLines": "2",
+                        "startLines": "6",
                         "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "9",
+                        "startOffsets": "250",
+                        "endLines": "13",
                         "endColumns": "12",
-                        "endOffsets": "506"
+                        "endOffsets": "765"
                     }
                 }
             ]

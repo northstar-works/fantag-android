@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Baseball circle -->
+    <path
+        android:fillColor="#10b981"
+        android:pathData="M54,20 C35.22,20 20,35.22 20,54 C20,72.78 35.22,88 54,88 C72.78,88 88,72.78 88,54 C88,35.22 72.78,20 54,20Z" />
+
+    <!-- Baseball stitches - white curves -->
+    <path
+        android:fillColor="#ffffff"
+        android:strokeColor="#ffffff"
+        android:strokeWidth="2"
+        android:pathData="M44,30 C46,36 46,44 44,50"
+        android:fillAlpha="0" />
+    <path
+        android:fillColor="#f0fdf4"
+        android:pathData="M42,30 C44,37 44,45 42,52 C40,45 40,37 42,30Z" />
+    <path
+        android:fillColor="#f0fdf4"
+        android:pathData="M66,30 C68,37 68,45 66,52 C64,45 64,37 66,30Z" />
+
+    <!-- FT letters -->
+    <path
+        android:fillColor="#ffffff"
+        android:pathData="M36,46 L36,42 L50,42 L50,46 L45,46 L45,62 L41,62 L41,46 Z" />
+    <path
+        android:fillColor="#ffffff"
+        android:pathData="M54,42 L70,42 L70,46 L64,46 L64,62 L60,62 L60,46 L54,46 Z" />
+
+    <!-- Small baseball stitches bottom -->
+    <path
+        android:fillColor="#059669"
+        android:pathData="M38,66 C42,64 46,64 50,66 C46,68 42,68 38,66Z" />
+    <path
+        android:fillColor="#059669"
+        android:pathData="M58,66 C62,64 66,64 70,66 C66,68 62,68 58,66Z" />
+
+</vector>
