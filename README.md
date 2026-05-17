@@ -59,7 +59,7 @@ If you want to use a local IP (e.g. `http://192.168.1.100:8011`) instead of the 
 
 ## Version
 
-Tracks FANTAG v3.2.8 / Build 64 lineup-position alerts, Android wrapper v3.2.8-b64-a5
+Tracks FANTAG v3.2.8 / Build 64 lineup-position alerts, Android wrapper v3.2.8-b64
 
 ## Distribution
 

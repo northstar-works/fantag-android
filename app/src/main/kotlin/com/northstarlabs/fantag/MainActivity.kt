@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "FANTAG"
         const val PREF_SERVER_URL = "server_url"
         const val PREF_ENABLE_PUSH = "enable_push"
-        const val DEFAULT_URL = "http://sidscri.from-tx.com"
+        const val DEFAULT_URL = "http://192.168.0.4"
     }
 
     // File chooser for screenshot imports
@@ -130,10 +130,10 @@ class MainActivity : AppCompatActivity() {
         ws.databaseEnabled = true
 
         // Zoom and layout
-        ws.useWideViewPort = true
-        ws.loadWithOverviewMode = true
-        ws.setSupportZoom(true)
-        ws.builtInZoomControls = true
+        ws.useWideViewPort = false
+        ws.loadWithOverviewMode = false
+        ws.setSupportZoom(false)
+        ws.builtInZoomControls = false
         ws.displayZoomControls = false
 
         // File access for screenshot imports
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         ws.allowContentAccess = true
 
         // Cache strategy
-        ws.cacheMode = WebSettings.LOAD_DEFAULT
+        ws.cacheMode = WebSettings.LOAD_NO_CACHE
 
         // Media
         ws.mediaPlaybackRequiresUserGesture = false

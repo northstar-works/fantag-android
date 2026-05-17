@@ -2,7 +2,7 @@
 <resources>
 
     <!-- FANTAG uses a dark slate theme matching the web app -->
-    <style name="Theme.FANTAG" parent="Theme.Material3.DayNight">
+    <style name="Theme.FANTAG" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/fantag_green</item>
         <item name="colorPrimaryVariant">@color/fantag_green_dark</item>
         <item name="colorOnPrimary">@android:color/white</item>
@@ -23,7 +23,7 @@
         <item name="toolbarStyle">@style/FANTAGToolbar</item>
     </style>
 
-    <style name="FANTAGToolbar" parent="Widget.AppCompat.ActionBar.Solid">
+    <style name="FANTAGToolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:background">@color/toolbar_bg</item>
         <item name="titleTextStyle">@style/FANTAGToolbarTitle</item>
         <item name="subtitleTextStyle">@style/FANTAGToolbarSubtitle</item>

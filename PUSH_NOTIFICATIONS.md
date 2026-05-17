@@ -45,7 +45,7 @@ Payload:
   "token": "FCM_DEVICE_TOKEN",
   "platform": "android",
   "enabled": true,
-  "app_version": "3.2.8-b64-a5",
+  "app_version": "3.2.8-b64",
   "app_version_code": 5,
   "device_model": "Samsung SM-S...",
   "sdk_int": 35

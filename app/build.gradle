@@ -11,8 +11,8 @@ android {
         applicationId "com.northstarlabs.fantag"
         minSdk 26
         targetSdk 35
-        versionCode 5
-        versionName "3.2.8-b64-a5"
+        versionCode 64
+        versionName "3.2.8-b64"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

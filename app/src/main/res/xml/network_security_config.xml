@@ -3,10 +3,11 @@
     <!-- Allow cleartext HTTP to the FANTAG DDNS domain and local IPs -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">sidscri.from-tx.com</domain>
-        <!-- Local network fallback - add your server IP here if needed -->
-        <!-- <domain includeSubdomains="false">192.168.1.100</domain> -->
+        <domain includeSubdomains="false">192.168.0.4</domain>
+        <domain includeSubdomains="false">192.168.0.73</domain>
+        <domain includeSubdomains="false">192.168.0.110</domain>
     </domain-config>
-    <base-config cleartextTrafficPermitted="false">
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
