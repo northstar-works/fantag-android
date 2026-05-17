@@ -1,0 +1,7 @@
+com.northstarlabs.fantag.app-pngs-0 C:\Users\Sidscri\Documents\GitHub\fantag-android\app\build\generated\res\pngs\release
+com.northstarlabs.fantag.app-resValues-1 C:\Users\Sidscri\Documents\GitHub\fantag-android\app\build\generated\res\resValues\release
+com.northstarlabs.fantag.app-packageReleaseResources-2 C:\Users\Sidscri\Documents\GitHub\fantag-android\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
+com.northstarlabs.fantag.app-packageReleaseResources-3 C:\Users\Sidscri\Documents\GitHub\fantag-android\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
+com.northstarlabs.fantag.app-release-4 C:\Users\Sidscri\Documents\GitHub\fantag-android\app\build\intermediates\merged_res\release\mergeReleaseResources
+com.northstarlabs.fantag.app-main-5 C:\Users\Sidscri\Documents\GitHub\fantag-android\app\src\main\res
+com.northstarlabs.fantag.app-release-6 C:\Users\Sidscri\Documents\GitHub\fantag-android\app\src\release\res

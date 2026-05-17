@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -8,55 +7,31 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.northstarlabs.fantag"
+        applicationId 'com.northstarlabs.fantag'
         minSdk 26
         targetSdk 35
         versionCode 64
-        versionName "3.2.8-b64"
+        versionName '3.2.8-b64'
+    }
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    buildFeatures {
+        buildConfig true
+    }
+
+    signingConfigs {
+        // Android Studio will create/use your real release signing config.
+        // Do not commit private keystore files to git.
     }
 
     buildTypes {
         release {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
+        }
     }
-
-    buildFeatures {
-        viewBinding true
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-}
-
-dependencies {
-    implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.webkit:webkit:1.11.0'
-    implementation 'androidx.preference:preference-ktx:1.2.1'
-
-    // Firebase Cloud Messaging for Android push notifications.
-    // This compiles without google-services.json; runtime registration is skipped gracefully
-    // until a Firebase config is added to app/google-services.json.
-    implementation platform('com.google.firebase:firebase-bom:33.5.1')
-    implementation 'com.google.firebase:firebase-messaging-ktx'
-}
-
-
-// Apply Firebase config generation only when the private config file exists.
-// This keeps open/dev builds from failing while still enabling real FCM builds.
-if (file('google-services.json').exists()) {
-    apply plugin: 'com.google.gms.google-services'
 }

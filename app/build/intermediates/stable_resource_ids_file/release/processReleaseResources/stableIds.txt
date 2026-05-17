@@ -1,0 +1,3 @@
+com.northstarlabs.fantag:xml/network_security_config = 0x7f030000
+com.northstarlabs.fantag:style/AppTheme = 0x7f020000
+com.northstarlabs.fantag:drawable/ic_launcher = 0x7f010000

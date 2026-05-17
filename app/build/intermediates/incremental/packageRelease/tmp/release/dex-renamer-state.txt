@@ -1,0 +1,4 @@
+#Sun May 17 03:50:53 CDT 2026
+base.0=C\:\\Users\\Sidscri\\Documents\\GitHub\\fantag-android\\app\\build\\intermediates\\dex\\release\\mergeDexRelease\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex

@@ -1,2 +1,0 @@
-Signing key commands/passwords were removed from this distributable package.
-Keep keystore passwords outside source control and local zip exports.
