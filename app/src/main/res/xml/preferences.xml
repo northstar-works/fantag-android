@@ -21,21 +21,6 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Notifications">
-
-        <SwitchPreferenceCompat
-            android:key="enable_push"
-            android:title="Lineup Push Alerts"
-            android:summary="Receive red, green, and blue confirmed-lineup alerts on this Android device."
-            android:defaultValue="true" />
-
-        <Preference
-            android:key="register_push"
-            android:title="Register This Device Now"
-            android:summary="Refresh this phone's push token with the Fantag backend." />
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="Data">
 
         <Preference

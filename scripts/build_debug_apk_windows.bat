@@ -31,11 +31,11 @@ if %APK_SIZE% LSS 1000000 (
 )
 
 if not exist dist mkdir dist
-copy /y "%APK%" "dist\com.northstarlabs.fantag_65.apk" >nul
+copy /y "%APK%" "dist\com.northstarlabs.fantag_66.apk" >nul
 
 echo.
-echo Built: dist\com.northstarlabs.fantag_65.apk
+echo Built: dist\com.northstarlabs.fantag_66.apk
 echo Size:  %APK_SIZE% bytes
 echo.
-echo Next: copy dist\com.northstarlabs.fantag_65.apk to /opt/appdata/fdroid/repo/
+echo Next: copy dist\com.northstarlabs.fantag_66.apk to /opt/appdata/fdroid/repo/
 endlocal

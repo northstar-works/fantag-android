@@ -2,22 +2,17 @@ package com.northstarlabs.fantag
 
 import android.content.Context
 import android.webkit.JavascriptInterface
+import android.widget.Toast
 
 class FantagAndroidBridge(private val context: Context) {
 
     @JavascriptInterface
     fun registerPushToken() {
-        PushRegistrar.registerCurrentToken(context, force = true)
+        // Push notifications are intentionally disabled in the b66 stable no-push build.
     }
 
     @JavascriptInterface
     fun showLineupAlert(color: String, title: String, body: String, playerId: String?) {
-        FantagNotifications.showLineupAlert(
-            context = context,
-            color = color,
-            title = title,
-            body = body,
-            playerId = playerId
-        )
+        Toast.makeText(context, "$title: $body", Toast.LENGTH_LONG).show()
     }
 }

@@ -2,9 +2,9 @@
 # Edit $SshTarget if your username or host changes.
 $ErrorActionPreference = "Stop"
 $SshTarget = "sidscri@sidscri-services"
-$RemoteTmp = "/tmp/com.northstarlabs.fantag_65.apk"
-$RemoteRepo = "/opt/appdata/fdroid/repo/com.northstarlabs.fantag_65.apk"
-$Apk = "dist\com.northstarlabs.fantag_65.apk"
+$RemoteTmp = "/tmp/com.northstarlabs.fantag_66.apk"
+$RemoteRepo = "/opt/appdata/fdroid/repo/com.northstarlabs.fantag_66.apk"
+$Apk = "dist\com.northstarlabs.fantag_66.apk"
 
 if (!(Test-Path $Apk)) { throw "Missing $Apk. Run scripts\build_debug_apk_windows.bat first." }
 $size = (Get-Item $Apk).Length

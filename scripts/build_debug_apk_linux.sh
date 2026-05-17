@@ -24,6 +24,6 @@ if [[ "$SIZE" -lt 1000000 ]]; then
   exit 1
 fi
 mkdir -p dist
-cp -f "$APK" "dist/com.northstarlabs.fantag_65.apk"
-echo "Built: dist/com.northstarlabs.fantag_65.apk"
+cp -f "$APK" "dist/com.northstarlabs.fantag_66.apk"
+echo "Built: dist/com.northstarlabs.fantag_66.apk"
 echo "Size:  $SIZE bytes"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- FANTAG brand colors -->
+    <!-- FANTAG brand colors matching the web UI -->
     <color name="fantag_green">#10b981</color>
     <color name="fantag_green_dark">#059669</color>
     <color name="fantag_blue">#3b82f6</color>
@@ -8,11 +8,6 @@
     <color name="fantag_bg_dark">#0f172a</color>
     <color name="fantag_surface_dark">#1e293b</color>
     <color name="fantag_surface_light">#f8fafc</color>
-
-    <!-- Legacy names referenced by older app/theme files. Do not remove. -->
-    <color name="fantag_primary">#10b981</color>
-    <color name="fantag_primary_dark">#0f172a</color>
-    <color name="fantag_accent">#3b82f6</color>
 
     <!-- Toolbar -->
     <color name="toolbar_bg">#0f172a</color>

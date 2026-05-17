@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.PreferenceManager
 import com.northstarlabs.fantag.databinding.ActivitySettingsBinding
 
@@ -64,8 +63,7 @@ class SettingsActivity : AppCompatActivity() {
                         return@OnPreferenceChangeListener false
                     }
                     pref.summary = url
-                    PushRegistrar.registerCurrentToken(requireContext(), force = true)
-                    Toast.makeText(context, "Server URL saved. Push token will re-register with this backend.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Server URL saved.", Toast.LENGTH_SHORT).show()
                     true
                 }
             }
@@ -76,34 +74,13 @@ class SettingsActivity : AppCompatActivity() {
                 val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
                 prefs.edit().putString(MainActivity.PREF_SERVER_URL, MainActivity.DEFAULT_URL).apply()
                 serverUrlPref?.summary = MainActivity.DEFAULT_URL
-                PushRegistrar.registerCurrentToken(requireContext(), force = true)
                 Toast.makeText(context, "Reset to default URL", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            // Push notification toggle
-            val pushPref = findPreference<SwitchPreferenceCompat>(MainActivity.PREF_ENABLE_PUSH)
-            pushPref?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                val enabled = newValue as? Boolean ?: true
-                if (enabled) {
-                    PushRegistrar.registerCurrentToken(requireContext(), force = true)
-                    Toast.makeText(context, "Lineup push alerts enabled", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, "Lineup push alerts disabled on this device", Toast.LENGTH_SHORT).show()
-                }
-                true
-            }
-
-            val registerPushPref = findPreference<Preference>("register_push")
-            registerPushPref?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                PushRegistrar.registerCurrentToken(requireContext(), force = true)
-                Toast.makeText(context, "Registering this device with Fantag backend", Toast.LENGTH_SHORT).show()
                 true
             }
 
             // App version info
             val versionPref = findPreference<Preference>("app_version")
-            versionPref?.summary = "Android v3.2.9-b65-fdroid1 / Fantag web target v3.2.9 build 65"
+            versionPref?.summary = "Android v3.2.9-b66-stable-no-push / Fantag web target v3.2.9 build 65"
 
             // Clear WebView cache
             val clearCachePref = findPreference<Preference>("clear_cache")
