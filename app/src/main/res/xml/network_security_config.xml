@@ -1,15 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Allow cleartext HTTP to the FANTAG DDNS domain and local IPs -->
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">sidscri.from-tx.com</domain>
-        <domain includeSubdomains="false">192.168.0.4</domain>
-        <domain includeSubdomains="false">192.168.0.73</domain>
-        <domain includeSubdomains="false">192.168.0.110</domain>
+        <domain includeSubdomains="true">192.168.0.4</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">sidneyshelton.com</domain>
     </domain-config>
-    <base-config cleartextTrafficPermitted="true">
-        <trust-anchors>
-            <certificates src="system" />
-        </trust-anchors>
-    </base-config>
+    <base-config cleartextTrafficPermitted="true" />
 </network-security-config>
