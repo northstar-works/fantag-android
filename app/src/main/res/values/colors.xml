@@ -13,6 +13,11 @@
     <color name="toolbar_bg">#0f172a</color>
     <color name="toolbar_text">#f1f5f9</color>
 
+    <!-- Legacy AppTheme aliases required by styles.xml -->
+    <color name="fantag_primary">#10b981</color>
+    <color name="fantag_primary_dark">#0f172a</color>
+    <color name="fantag_accent">#3b82f6</color>
+
     <!-- Material theme seeds -->
     <color name="md_theme_primary">#10b981</color>
     <color name="md_theme_onPrimary">#ffffff</color>
