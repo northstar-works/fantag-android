@@ -1,0 +1,13 @@
+Delete these files if they exist in your older Android repo before building b78 stable-no-push:
+
+app/src/main/kotlin/com/northstarlabs/fantag/FantagMessagingService.kt
+app/src/main/kotlin/com/northstarlabs/fantag/PushRegistrar.kt
+app/src/main/kotlin/com/northstarlabs/fantag/FantagNotifications.kt
+app/google-services.json
+
+Also make sure these are NOT present:
+- Firebase dependencies in app/build.gradle
+- Google Services plugin in app/build.gradle or root build.gradle
+- POST_NOTIFICATIONS permission in AndroidManifest.xml
+- Firebase messaging <service> block in AndroidManifest.xml
+- notification/push preferences in app/src/main/res/xml/preferences.xml

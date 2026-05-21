@@ -1,3 +1,11 @@
+# v3.3.0-b78-stable-no-push
+
+- Removed Firebase/FCM push notification code from Android wrapper.
+- Removed notification permission/service/toggle/token registration.
+- Enabled `buildConfig true` for `BuildConfig.VERSION_NAME`.
+- Bumped Android versionCode to 78 and versionName to `3.3.0-b78-stable-no-push`.
+- Refreshed launcher icons from the b78 web assets.
+
 # Changelog
 
 ## v3.2.9-b65-fdroid1

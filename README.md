@@ -53,7 +53,6 @@ If you want to use a local IP (e.g. `http://192.168.1.100:8011`) instead of the 
 - ⚙️ Configurable server URL (persisted in SharedPreferences)
 - 🗑️ Clear cache option in Settings
 - Dark theme matching FANTAG's slate color scheme
-- 🔔 Native Android lineup push notifications via Firebase Cloud Messaging
 - 🚦 Red/green/blue confirmed-lineup alert color support
 - 📲 Device push-token registration to `/push/register` on your Fantag backend
 
@@ -71,4 +70,9 @@ northstar-labs/fdroid
 
 ## Push Notifications
 
-See `PUSH_NOTIFICATIONS.md`. Add your private Firebase `google-services.json` to `app/google-services.json`, then make sure your Fantag backend supports `POST /push/register` and sends FCM data payloads with `alert_color`, `title`, `body`, and `player_id`.
+Push notifications are intentionally disabled in this stable no-push build.
+
+
+## v3.3.0-b78 stable-no-push
+
+Firebase/FCM push notification code is removed/disabled in this build so the Android wrapper launches reliably while push is rebuilt later.

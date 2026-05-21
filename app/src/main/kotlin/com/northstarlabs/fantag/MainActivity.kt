@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        // Stable F-Droid wrapper: push notifications intentionally disabled in this build.
+        // Stable no-push wrapper: Firebase/FCM push notifications intentionally disabled in this build.
         setupWebView()
         setupSwipeRefresh()
 

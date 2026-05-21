@@ -11,8 +11,8 @@ android {
         applicationId "com.northstarlabs.fantag"
         minSdk 26
         targetSdk 35
-        versionCode 67
-        versionName "3.3.0-b67"
+        versionCode 68
+        versionName "3.3.0-b68-stable-no-push"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
