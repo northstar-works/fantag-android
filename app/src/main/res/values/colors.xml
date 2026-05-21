@@ -36,7 +36,11 @@
     <color name="md_theme_light_onSurface">#0f172a</color>
 
     <!-- Legacy AppTheme aliases required by styles.xml -->
+
+
+    <!-- Legacy AppTheme aliases required by styles.xml -->
     <color name="fantag_primary">#10b981</color>
     <color name="fantag_primary_dark">#0f172a</color>
     <color name="fantag_accent">#3b82f6</color>
+
 </resources>
