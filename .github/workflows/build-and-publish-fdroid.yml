@@ -168,80 +168,93 @@ jobs:
           git clone https://x-access-token:${{ secrets.FDROID_REPO_PAT }}@github.com/northstar-works/fdroid.git fdroid-repo
 
       - name: Copy APK and update F-Droid metadata
+        env:
+          APK_PATH: ${{ steps.apk.outputs.apk_path }}
+          OUT_NAME: ${{ steps.apk.outputs.out_name }}
+          VERSION_NAME: ${{ steps.apk.outputs.version_name }}
+          VERSION_CODE: ${{ steps.apk.outputs.version_code }}
         run: |
           set -e
           mkdir -p fdroid-repo/repo fdroid-repo/metadata
           rm -f fdroid-repo/repo/com.northstarlabs.fantag_*.apk
-          cp "${{ steps.apk.outputs.apk_path }}" "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
-
-          cat > fdroid-repo/metadata/com.northstarlabs.fantag.yml <<EOF_META
-Categories:
-  - Sports & Health
-
-License: Proprietary
-
-AuthorName: Northstar Labs
-AuthorWebSite: https://github.com/northstar-works
-SourceCode: https://github.com/northstar-works/fantag-android
-IssueTracker: https://github.com/northstar-works/fantag-android/issues
-
-Name: FANTAG
-Summary: Fantasy baseball roster tracker for your self-hosted FANTAG server
-Description: |-
-  FANTAG is a personal fantasy baseball roster management tool that connects
-  to your self-hosted FANTAG server.
-
-  This private Android build is a native WebView wrapper for your FANTAG web UI.
-  Default server URL: http://sidscri.from-tx.com:8010
-
-RepoType: git
-Repo: https://github.com/northstar-works/fantag-android
-
-AutoUpdateMode: None
-UpdateCheckMode: None
-
-CurrentVersion: ${{ steps.apk.outputs.version_name }}
-CurrentVersionCode: ${{ steps.apk.outputs.version_code }}
-EOF_META
-
+          cp "$APK_PATH" "fdroid-repo/repo/$OUT_NAME"
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          version_name = os.environ['VERSION_NAME']
+          version_code = os.environ['VERSION_CODE']
+          metadata = f'''Categories:
+            - Sports & Health
+          
+          License: Proprietary
+          
+          AuthorName: Northstar Labs
+          AuthorWebSite: https://github.com/northstar-works
+          SourceCode: https://github.com/northstar-works/fantag-android
+          IssueTracker: https://github.com/northstar-works/fantag-android/issues
+          
+          Name: FANTAG
+          Summary: Fantasy baseball roster tracker for your self-hosted FANTAG server
+          Description: |-
+            FANTAG is a personal fantasy baseball roster management tool that connects
+            to your self-hosted FANTAG server.
+          
+            This private Android build is a native WebView wrapper for your FANTAG web UI.
+            Default server URL: http://sidscri.from-tx.com:8010
+          
+          RepoType: git
+          Repo: https://github.com/northstar-works/fantag-android
+          
+          AutoUpdateMode: None
+          UpdateCheckMode: None
+          
+          CurrentVersion: {version_name}
+          CurrentVersionCode: {version_code}
+          '''
+          Path('fdroid-repo/metadata').mkdir(parents=True, exist_ok=True)
+          Path('fdroid-repo/metadata/com.northstarlabs.fantag.yml').write_text(metadata, encoding='utf-8')
+          PY
+          
           echo "Copied APK:"
-          ls -lh "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
+          ls -lh "fdroid-repo/repo/$OUT_NAME"
           echo "Updated metadata:"
           cat fdroid-repo/metadata/com.northstarlabs.fantag.yml
 
       - name: Update landing page Fantag card
+        env:
+          VERSION_CODE: ${{ steps.apk.outputs.version_code }}
+          VERSION_NAME: ${{ steps.apk.outputs.version_name }}
         run: |
           set -e
           cd fdroid-repo
           python3 - <<'PY'
           from pathlib import Path
           import os, re
-          version_code = os.environ.get('VERSION_CODE') or '${{ steps.apk.outputs.version_code }}'
-          version_name = os.environ.get('VERSION_NAME') or '${{ steps.apk.outputs.version_name }}'
+          version_code = os.environ['VERSION_CODE']
+          version_name = os.environ['VERSION_NAME']
           path = Path('index.html')
           html = path.read_text(encoding='utf-8')
-          card = '''
-      <a class="app-card" href="repo/com.northstarlabs.fantag_{code}.apk">
-        <div class="app-icon">⚾</div>
-        <div class="app-name">FANTAG</div>
-        <div class="app-desc">Fantasy baseball roster tracker for your self-hosted FANTAG server.</div>
-        <div class="app-meta">
-          <span class="badge">v{version}</span>
-          <span class="badge">Sports &amp; Health</span>
-        </div>
-      </a>
-'''.format(code=version_code, version=version_name)
+          card = f'''
+                <a class="app-card" href="repo/com.northstarlabs.fantag_{version_code}.apk">
+                  <div class="app-icon">⚾</div>
+                  <div class="app-name">FANTAG</div>
+                  <div class="app-desc">Fantasy baseball roster tracker for your self-hosted FANTAG server.</div>
+                  <div class="app-meta">
+                    <span class="badge">v{version_name}</span>
+                    <span class="badge">Sports &amp; Health</span>
+                  </div>
+                </a>
+          '''
+          pattern = r'\n\s*<a class="app-card" href="repo/com\.northstarlabs\.fantag_[^>]+>.*?</a>\n'
           if 'com.northstarlabs.fantag_' in html:
-              html = re.sub(r'\n\s*<a class="app-card" href="repo/com\.northstarlabs\.fantag_[^>]+>.*?</a>\n', card, html, count=1, flags=re.S)
+              html = re.sub(pattern, card, html, count=1, flags=re.S)
           elif '<div class="apps-grid">' in html:
               html = html.replace('<div class="apps-grid">', '<div class="apps-grid">' + card, 1)
           else:
               raise SystemExit('Could not find apps-grid in index.html')
           path.write_text(html, encoding='utf-8')
           PY
-        env:
-          VERSION_CODE: ${{ steps.apk.outputs.version_code }}
-          VERSION_NAME: ${{ steps.apk.outputs.version_name }}
+
 
       - name: Rebuild F-Droid repo index
         run: |
