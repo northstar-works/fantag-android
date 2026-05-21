@@ -33,12 +33,37 @@ jobs:
             chmod +x ./gradlew
           fi
 
+      - name: Compute Android version
+        id: version
+        run: |
+          set -e
+          BASE_VERSION="3.3.0"
+          # Android versionCode must only increase. Use the GitHub run number,
+          # but never allow it to fall below the current Fantag b82 baseline.
+          RUN_CODE="${GITHUB_RUN_NUMBER:-82}"
+          if [ "$RUN_CODE" -lt 82 ]; then RUN_CODE=82; fi
+          VERSION_CODE="$RUN_CODE"
+          VERSION_NAME="${BASE_VERSION}-b${VERSION_CODE}"
+          echo "base_version=$BASE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "FANTAG_BASE_VERSION=$BASE_VERSION" >> "$GITHUB_ENV"
+          echo "FANTAG_VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
+          echo "FANTAG_VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          echo "Building Fantag Android $VERSION_NAME ($VERSION_CODE)"
+
       - name: Build debug APK
         run: |
           if [ -f "./gradlew" ]; then
-            ./gradlew --no-daemon clean assembleDebug
+            ./gradlew --no-daemon clean assembleDebug \
+              -PFANTAG_BASE_VERSION="${{ steps.version.outputs.base_version }}" \
+              -PFANTAG_VERSION_CODE="${{ steps.version.outputs.version_code }}" \
+              -PFANTAG_VERSION_NAME="${{ steps.version.outputs.version_name }}"
           else
-            gradle --no-daemon clean assembleDebug
+            gradle --no-daemon clean assembleDebug \
+              -PFANTAG_BASE_VERSION="${{ steps.version.outputs.base_version }}" \
+              -PFANTAG_VERSION_CODE="${{ steps.version.outputs.version_code }}" \
+              -PFANTAG_VERSION_NAME="${{ steps.version.outputs.version_name }}"
           fi
 
       - name: Locate and verify APK
@@ -99,15 +124,45 @@ jobs:
         run: |
           git clone https://x-access-token:${{ secrets.FDROID_REPO_PAT }}@github.com/northstar-works/fdroid.git fdroid-repo
 
-      - name: Copy APK into fdroid repo
+      - name: Copy APK and update F-Droid metadata
         run: |
           set -e
 
-          mkdir -p fdroid-repo/repo
+          mkdir -p fdroid-repo/repo fdroid-repo/metadata
           cp "${{ steps.apk.outputs.apk_path }}" "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
+
+          cat > fdroid-repo/metadata/com.northstarlabs.fantag.yml <<EOF
+Categories:
+  - Sports & Health
+
+License: proprietary
+
+AuthorName: Northstar Labs
+AuthorWebSite: https://github.com/northstar-works
+
+Name: FANTAG
+Summary: Fantasy baseball roster tracker for your self-hosted FANTAG server
+Description: |-
+  FANTAG is a personal fantasy baseball roster management tool that connects
+  to your self-hosted FANTAG server.
+
+  This private Android build is a native WebView wrapper for your FANTAG web UI.
+  Default server URL: http://sidscri.from-tx.com:8010
+
+RepoType: git
+Repo: https://github.com/northstar-works/fantag-android
+
+AutoUpdateMode: None
+UpdateCheckMode: None
+
+CurrentVersion: ${{ steps.apk.outputs.version_name }}
+CurrentVersionCode: ${{ steps.apk.outputs.version_code }}
+EOF
 
           echo "Copied APK:"
           ls -lh "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
+          echo "Updated metadata:"
+          cat fdroid-repo/metadata/com.northstarlabs.fantag.yml
 
       - name: Commit APK to fdroid repo
         run: |
@@ -118,7 +173,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add repo/${{ steps.apk.outputs.out_name }}
+          git add repo/${{ steps.apk.outputs.out_name }} metadata/com.northstarlabs.fantag.yml
 
           if git diff --cached --quiet; then
             echo "No fdroid repo changes to commit."
