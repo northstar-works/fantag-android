@@ -1,6 +1,0 @@
-repo_url: "http://sidscri.from-tx.com/fdroid/repo"
-repo_name: "Sidney Private F-Droid Repo"
-repo_icon: "icon.png"
-repo_description: |-
-  Private Android app repository for self-hosted apps.
-archive_older: 0
