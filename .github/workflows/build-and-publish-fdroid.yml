@@ -132,32 +132,32 @@ jobs:
           cp "${{ steps.apk.outputs.apk_path }}" "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
 
           cat > fdroid-repo/metadata/com.northstarlabs.fantag.yml <<EOF
-Categories:
-  - Sports & Health
+          Categories:
+            - Sports & Health
 
-License: proprietary
+          License: proprietary
 
-AuthorName: Northstar Labs
-AuthorWebSite: https://github.com/northstar-works
+          AuthorName: Northstar Labs
+          AuthorWebSite: https://github.com/northstar-works
 
-Name: FANTAG
-Summary: Fantasy baseball roster tracker for your self-hosted FANTAG server
-Description: |-
-  FANTAG is a personal fantasy baseball roster management tool that connects
-  to your self-hosted FANTAG server.
+          Name: FANTAG
+          Summary: Fantasy baseball roster tracker for your self-hosted FANTAG server
+          Description: |-
+            FANTAG is a personal fantasy baseball roster management tool that connects
+            to your self-hosted FANTAG server.
 
-  This private Android build is a native WebView wrapper for your FANTAG web UI.
-  Default server URL: http://sidscri.from-tx.com:8010
+            This private Android build is a native WebView wrapper for your FANTAG web UI.
+            Default server URL: http://sidscri.from-tx.com:8010
 
-RepoType: git
-Repo: https://github.com/northstar-works/fantag-android
+          RepoType: git
+          Repo: https://github.com/northstar-works/fantag-android
 
-AutoUpdateMode: None
-UpdateCheckMode: None
+          AutoUpdateMode: None
+          UpdateCheckMode: None
 
-CurrentVersion: ${{ steps.apk.outputs.version_name }}
-CurrentVersionCode: ${{ steps.apk.outputs.version_code }}
-EOF
+          CurrentVersion: ${{ steps.apk.outputs.version_name }}
+          CurrentVersionCode: ${{ steps.apk.outputs.version_code }}
+          EOF
 
           echo "Copied APK:"
           ls -lh "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
