@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "FANTAG"
         const val PREF_SERVER_URL = "server_url"
-        const val DEFAULT_URL = "http://sidscri.from-tx.com:8010"
+        const val DEFAULT_URL = "https://fantag.sidneyshelton.com/"
     }
 
     // File chooser for screenshot imports
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        // Stable no-push wrapper: Firebase/FCM push notifications intentionally disabled in this build.
+        // Stable wrapper v2.0.1-b9: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.0-b68.
         setupWebView()
         setupSwipeRefresh()
 

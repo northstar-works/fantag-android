@@ -2,15 +2,6 @@ name: Build Fantag APK and Publish to F-Droid Repo
 
 on:
   workflow_dispatch:
-    inputs:
-      version_code:
-        description: "Optional Android versionCode. Leave blank to auto-increment from GitHub run number."
-        required: false
-        default: ""
-      version_name:
-        description: "Optional Android versionName. Leave blank to use 3.3.0-b<versionCode>."
-        required: false
-        default: ""
   push:
     branches:
       - main
@@ -44,27 +35,16 @@ jobs:
 
       - name: Compute Android version
         id: version
-        env:
-          INPUT_VERSION_CODE: ${{ github.event.inputs.version_code }}
-          INPUT_VERSION_NAME: ${{ github.event.inputs.version_name }}
         run: |
           set -e
-          BASE_VERSION="3.3.0"
-          MIN_CODE="85"
-
-          if [ -n "${INPUT_VERSION_CODE:-}" ]; then
-            VERSION_CODE="$INPUT_VERSION_CODE"
-          else
-            VERSION_CODE="${GITHUB_RUN_NUMBER:-85}"
-            if [ "$VERSION_CODE" -lt "$MIN_CODE" ]; then VERSION_CODE="$MIN_CODE"; fi
-          fi
-
-          if [ -n "${INPUT_VERSION_NAME:-}" ]; then
-            VERSION_NAME="$INPUT_VERSION_NAME"
-          else
-            VERSION_NAME="${BASE_VERSION}-b${VERSION_CODE}"
-          fi
-
+          BASE_VERSION="2.0.1"
+          # Android versionCode is internal and must only increase.
+          # Visible versionName is the Android wrapper version requested: 2.0.1-b9.
+          # Do NOT use versionCode 9 if b85 was already published, or Android/F-Droid will not update.
+          RUN_CODE="${GITHUB_RUN_NUMBER:-87}"
+          if [ "$RUN_CODE" -lt 87 ]; then RUN_CODE=87; fi
+          VERSION_CODE="$RUN_CODE"
+          VERSION_NAME="${BASE_VERSION}-b9"
           echo "base_version=$BASE_VERSION" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
@@ -73,40 +53,15 @@ jobs:
           echo "FANTAG_VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
           echo "Building Fantag Android $VERSION_NAME ($VERSION_CODE)"
 
-      - name: Require stable signing secrets before publishing
+      - name: Build debug APK
         run: |
-          set -e
-          if [ -z "${{ secrets.FANTAG_KEYSTORE_BASE64 }}" ] || [ -z "${{ secrets.FANTAG_KEYSTORE_PASSWORD }}" ] || [ -z "${{ secrets.FANTAG_KEY_ALIAS }}" ] || [ -z "${{ secrets.FANTAG_KEY_PASSWORD }}" ]; then
-            echo "ERROR: Stable signing secrets are missing."
-            echo "Publishing debug-signed APKs causes F-Droid/Android update failures because the signer changes."
-            echo "Required repository secrets:"
-            echo "  FANTAG_KEYSTORE_BASE64"
-            echo "  FANTAG_KEYSTORE_PASSWORD"
-            echo "  FANTAG_KEY_ALIAS"
-            echo "  FANTAG_KEY_PASSWORD"
-            exit 1
-          fi
-
-      - name: Restore signing keystore
-        run: |
-          set -e
-          mkdir -p "$RUNNER_TEMP/signing"
-          echo "${{ secrets.FANTAG_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/signing/fantag-upload.jks"
-          echo "FANTAG_KEYSTORE_FILE=$RUNNER_TEMP/signing/fantag-upload.jks" >> "$GITHUB_ENV"
-          echo "FANTAG_KEYSTORE_PASSWORD=${{ secrets.FANTAG_KEYSTORE_PASSWORD }}" >> "$GITHUB_ENV"
-          echo "FANTAG_KEY_ALIAS=${{ secrets.FANTAG_KEY_ALIAS }}" >> "$GITHUB_ENV"
-          echo "FANTAG_KEY_PASSWORD=${{ secrets.FANTAG_KEY_PASSWORD }}" >> "$GITHUB_ENV"
-
-      - name: Build release APK
-        run: |
-          set -e
           if [ -f "./gradlew" ]; then
-            ./gradlew --no-daemon clean assembleRelease \
+            ./gradlew --no-daemon clean assembleDebug \
               -PFANTAG_BASE_VERSION="${{ steps.version.outputs.base_version }}" \
               -PFANTAG_VERSION_CODE="${{ steps.version.outputs.version_code }}" \
               -PFANTAG_VERSION_NAME="${{ steps.version.outputs.version_name }}"
           else
-            gradle --no-daemon clean assembleRelease \
+            gradle --no-daemon clean assembleDebug \
               -PFANTAG_BASE_VERSION="${{ steps.version.outputs.base_version }}" \
               -PFANTAG_VERSION_CODE="${{ steps.version.outputs.version_code }}" \
               -PFANTAG_VERSION_NAME="${{ steps.version.outputs.version_name }}"
@@ -116,10 +71,9 @@ jobs:
         id: apk
         run: |
           set -e
-          APK="$(find app/build/outputs/apk -type f -name "*.apk" | grep -v androidTest | grep -i release | head -n 1)"
-          if [ -z "$APK" ]; then
-            APK="$(find app/build/outputs/apk -type f -name "*.apk" | grep -v androidTest | head -n 1)"
-          fi
+
+          APK="$(find app/build/outputs/apk -type f -name "*.apk" | grep -v androidTest | head -n 1)"
+
           if [ -z "$APK" ]; then
             echo "ERROR: No APK found."
             exit 1
@@ -128,6 +82,7 @@ jobs:
           SIZE="$(stat -c%s "$APK")"
           echo "APK=$APK"
           echo "SIZE=$SIZE"
+
           if [ "$SIZE" -lt 1000000 ]; then
             echo "ERROR: APK is too small. Refusing to publish bad APK."
             ls -lh "$APK"
@@ -136,6 +91,7 @@ jobs:
 
           AAPT="$(find "$ANDROID_HOME/build-tools" -name aapt | sort -V | tail -n 1)"
           BADGING="$($AAPT dump badging "$APK")"
+
           PACKAGE="$(echo "$BADGING" | sed -n "s/package: name='\([^']*\)'.*/\1/p")"
           VERSION_CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\([^']*\)'.*/\1/p")"
           VERSION_NAME="$(echo "$BADGING" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p")"
@@ -147,11 +103,13 @@ jobs:
           fi
 
           OUT_NAME="${PACKAGE}_${VERSION_CODE}.apk"
+
           echo "package=$PACKAGE" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
           echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
           echo "out_name=$OUT_NAME" >> "$GITHUB_OUTPUT"
+
           echo "Detected package: $PACKAGE"
           echo "Detected versionCode: $VERSION_CODE"
           echo "Detected versionName: $VERSION_NAME"
@@ -168,112 +126,61 @@ jobs:
           git clone https://x-access-token:${{ secrets.FDROID_REPO_PAT }}@github.com/northstar-works/fdroid.git fdroid-repo
 
       - name: Copy APK and update F-Droid metadata
-        env:
-          APK_PATH: ${{ steps.apk.outputs.apk_path }}
-          OUT_NAME: ${{ steps.apk.outputs.out_name }}
-          VERSION_NAME: ${{ steps.apk.outputs.version_name }}
-          VERSION_CODE: ${{ steps.apk.outputs.version_code }}
         run: |
           set -e
+
           mkdir -p fdroid-repo/repo fdroid-repo/metadata
-          rm -f fdroid-repo/repo/com.northstarlabs.fantag_*.apk
-          cp "$APK_PATH" "fdroid-repo/repo/$OUT_NAME"
-          python3 - <<'PY'
-          from pathlib import Path
-          import os
-          version_name = os.environ['VERSION_NAME']
-          version_code = os.environ['VERSION_CODE']
-          metadata = f'''Categories:
+          cp "${{ steps.apk.outputs.apk_path }}" "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
+
+          cat > fdroid-repo/metadata/com.northstarlabs.fantag.yml <<EOF
+          Categories:
             - Sports & Health
-          
-          License: Proprietary
-          
+
+          License: proprietary
+
           AuthorName: Northstar Labs
           AuthorWebSite: https://github.com/northstar-works
-          SourceCode: https://github.com/northstar-works/fantag-android
-          IssueTracker: https://github.com/northstar-works/fantag-android/issues
-          
+
           Name: FANTAG
           Summary: Fantasy baseball roster tracker for your self-hosted FANTAG server
           Description: |-
             FANTAG is a personal fantasy baseball roster management tool that connects
             to your self-hosted FANTAG server.
-          
+
             This private Android build is a native WebView wrapper for your FANTAG web UI.
-            Default server URL: http://sidscri.from-tx.com:8010
-          
+            Default server URL: https://fantag.sidneyshelton.com/
+            Web/Docker target version: 3.4.0-b68
+
           RepoType: git
           Repo: https://github.com/northstar-works/fantag-android
-          
+
           AutoUpdateMode: None
           UpdateCheckMode: None
-          
-          CurrentVersion: {version_name}
-          CurrentVersionCode: {version_code}
-          '''
-          Path('fdroid-repo/metadata').mkdir(parents=True, exist_ok=True)
-          Path('fdroid-repo/metadata/com.northstarlabs.fantag.yml').write_text(metadata, encoding='utf-8')
-          PY
-          
+
+          CurrentVersion: ${{ steps.apk.outputs.version_name }}
+          CurrentVersionCode: ${{ steps.apk.outputs.version_code }}
+          EOF
+
           echo "Copied APK:"
-          ls -lh "fdroid-repo/repo/$OUT_NAME"
+          ls -lh "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
           echo "Updated metadata:"
           cat fdroid-repo/metadata/com.northstarlabs.fantag.yml
 
-      - name: Update landing page Fantag card
-        env:
-          VERSION_CODE: ${{ steps.apk.outputs.version_code }}
-          VERSION_NAME: ${{ steps.apk.outputs.version_name }}
+      - name: Commit APK to fdroid repo
         run: |
           set -e
-          cd fdroid-repo
-          python3 - <<'PY'
-          from pathlib import Path
-          import os, re
-          version_code = os.environ['VERSION_CODE']
-          version_name = os.environ['VERSION_NAME']
-          path = Path('index.html')
-          html = path.read_text(encoding='utf-8')
-          card = f'''
-                <a class="app-card" href="repo/com.northstarlabs.fantag_{version_code}.apk">
-                  <div class="app-icon">⚾</div>
-                  <div class="app-name">FANTAG</div>
-                  <div class="app-desc">Fantasy baseball roster tracker for your self-hosted FANTAG server.</div>
-                  <div class="app-meta">
-                    <span class="badge">v{version_name}</span>
-                    <span class="badge">Sports &amp; Health</span>
-                  </div>
-                </a>
-          '''
-          pattern = r'\n\s*<a class="app-card" href="repo/com\.northstarlabs\.fantag_[^>]+>.*?</a>\n'
-          if 'com.northstarlabs.fantag_' in html:
-              html = re.sub(pattern, card, html, count=1, flags=re.S)
-          elif '<div class="apps-grid">' in html:
-              html = html.replace('<div class="apps-grid">', '<div class="apps-grid">' + card, 1)
-          else:
-              raise SystemExit('Could not find apps-grid in index.html')
-          path.write_text(html, encoding='utf-8')
-          PY
 
-
-      - name: Rebuild F-Droid repo index
-        run: |
-          set -e
           cd fdroid-repo
-          sudo apt-get update
-          sudo apt-get install -y fdroidserver
-          fdroid update --create-metadata --pretty
 
-      - name: Commit APK, metadata, index, and page to fdroid repo
-        run: |
-          set -e
-          cd fdroid-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add repo metadata index.html
+
+          git add repo/${{ steps.apk.outputs.out_name }} metadata/com.northstarlabs.fantag.yml
+
           if git diff --cached --quiet; then
             echo "No fdroid repo changes to commit."
             exit 0
           fi
-          git commit -m "Publish Fantag Android ${{ steps.apk.outputs.version_name }}"
+
+          git commit -m "Add Fantag Android ${{ steps.apk.outputs.version_name }} APK ${{ steps.apk.outputs.version_code }}"
           git push

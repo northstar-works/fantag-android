@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <!-- Private self-hosted FANTAG repo build.
-         Allows HTTP for home LAN/DDNS URLs such as http://sidscri.from-tx.com:8010.
-         This avoids Android WebView blocking cleartext local/self-hosted access. -->
+         Default production target is https://fantag.sidneyshelton.com/.
+         Cleartext is still permitted for local/LAN troubleshooting URLs. -->
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
@@ -11,6 +11,7 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">sidscri.from-tx.com</domain>
         <domain includeSubdomains="true">sidneyshelton.com</domain>
+        <domain includeSubdomains="true">fantag.sidneyshelton.com</domain>
         <domain includeSubdomains="false">192.168.0.4</domain>
         <domain includeSubdomains="false">192.168.0.73</domain>
         <domain includeSubdomains="false">192.168.0.110</domain>

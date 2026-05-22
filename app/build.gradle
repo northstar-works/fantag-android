@@ -3,17 +3,15 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-// FANTAG Android wrapper versioning.
-// GitHub Actions can override these with -PFANTAG_VERSION_CODE / -PFANTAG_VERSION_NAME.
-def fantagBaseVersion = (findProperty("FANTAG_BASE_VERSION") ?: System.getenv("FANTAG_BASE_VERSION") ?: "3.3.0").toString()
-def fantagVersionCodeRaw = (findProperty("FANTAG_VERSION_CODE") ?: System.getenv("FANTAG_VERSION_CODE") ?: "85").toString()
-def fantagVersionCode = fantagVersionCodeRaw.replaceAll(/[^0-9]/, "").toInteger()
-def fantagVersionName = (findProperty("FANTAG_VERSION_NAME") ?: System.getenv("FANTAG_VERSION_NAME") ?: "${fantagBaseVersion}-b${fantagVersionCode}").toString()
 
-def hasReleaseSigning = System.getenv("FANTAG_KEYSTORE_FILE") &&
-        System.getenv("FANTAG_KEYSTORE_PASSWORD") &&
-        System.getenv("FANTAG_KEY_ALIAS") &&
-        System.getenv("FANTAG_KEY_PASSWORD")
+// FANTAG auto-versioning for GitHub Actions / F-Droid repo publishing.
+// Override with -PFANTAG_VERSION_CODE=87 -PFANTAG_VERSION_NAME=2.0.1-b9 if needed.
+def fantagBaseVersion = (findProperty("FANTAG_BASE_VERSION") ?: System.getenv("FANTAG_BASE_VERSION") ?: "2.0.1").toString()
+def fantagVersionCodeRaw = (findProperty("FANTAG_VERSION_CODE") ?: System.getenv("FANTAG_VERSION_CODE") ?: System.getenv("GITHUB_RUN_NUMBER") ?: "87").toString()
+def fantagVersionCode = fantagVersionCodeRaw.replaceAll(/[^0-9]/, "").toInteger()
+// Visible app version should follow the Android wrapper version, not the web/docker version.
+// Keep versionCode monotonic for Android/F-Droid updates, but keep versionName as 2.0.1-b9.
+def fantagVersionName = (findProperty("FANTAG_VERSION_NAME") ?: System.getenv("FANTAG_VERSION_NAME") ?: "2.0.1-b9").toString()
 
 android {
     namespace 'com.northstarlabs.fantag'
@@ -25,25 +23,12 @@ android {
         targetSdk 35
         versionCode fantagVersionCode
         versionName fantagVersionName
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
 
-    signingConfigs {
-        release {
-            if (hasReleaseSigning) {
-                storeFile file(System.getenv("FANTAG_KEYSTORE_FILE"))
-                storePassword System.getenv("FANTAG_KEYSTORE_PASSWORD")
-                keyAlias System.getenv("FANTAG_KEY_ALIAS")
-                keyPassword System.getenv("FANTAG_KEY_PASSWORD")
-            }
-        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            if (hasReleaseSigning) {
-                signingConfig signingConfigs.release
-            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

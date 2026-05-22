@@ -7,8 +7,8 @@
         <EditTextPreference
             android:key="server_url"
             android:title="FANTAG Server URL"
-            android:summary="http://sidscri.from-tx.com:8010"
-            android:defaultValue="http://sidscri.from-tx.com:8010"
+            android:summary="https://fantag.sidneyshelton.com/"
+            android:defaultValue="https://fantag.sidneyshelton.com/"
             android:inputType="textUri"
             android:dialogTitle="Server URL"
             android:dialogMessage="Enter your FANTAG server address. Use https:// for remote access or http:// for local network."
@@ -17,7 +17,7 @@
         <Preference
             android:key="reset_url"
             android:title="Reset to Default URL"
-            android:summary="Restore http://sidscri.from-tx.com:8010" />
+            android:summary="Restore https://fantag.sidneyshelton.com/" />
 
     </PreferenceCategory>
 
