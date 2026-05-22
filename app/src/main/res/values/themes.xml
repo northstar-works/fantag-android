@@ -2,7 +2,7 @@
 <resources>
 
     <!-- FANTAG uses a dark slate theme matching the web app -->
-    <style name="Theme.FANTAG" parent="Theme.Material3.DayNight">
+    <style name="Theme.FANTAG" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/fantag_green</item>
         <item name="colorPrimaryVariant">@color/fantag_green_dark</item>
         <item name="colorOnPrimary">@android:color/white</item>
@@ -17,6 +17,12 @@
         <item name="android:windowBackground">@color/fantag_bg_dark</item>
         <item name="android:statusBarColor">@color/fantag_bg_dark</item>
         <item name="android:navigationBarColor">@color/fantag_bg_dark</item>
+
+        <!-- Explicitly disable the decor ActionBar because MainActivity and SettingsActivity use custom Toolbar views. -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
 
         <!-- Toolbar -->
         <item name="actionBarStyle">@style/FANTAGToolbar</item>

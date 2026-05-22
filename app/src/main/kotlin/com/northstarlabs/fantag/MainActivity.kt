@@ -59,8 +59,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        // Stable wrapper v2.0.1-b9: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.0-b68.
+        // The app uses a custom Toolbar. Keep launch resilient even if a bad theme slips into a build.
+        try {
+            setSupportActionBar(binding.toolbar)
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Toolbar setup failed; continuing without support ActionBar", e)
+        }
+        // Stable wrapper v3.4.1-b88-launchfix: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.0-b68.
         setupWebView()
         setupSwipeRefresh()
 

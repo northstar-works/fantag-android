@@ -1,6 +1,7 @@
 package com.northstarlabs.fantag
 
 import android.os.Bundle
+import android.util.Log
 import android.text.InputType
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,10 @@ import com.northstarlabs.fantag.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 
+    companion object {
+        private const val TAG = "FANTAG_SETTINGS"
+    }
+
     private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,8 +24,12 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        try {
+            setSupportActionBar(binding.toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Settings toolbar setup failed; continuing without support ActionBar", e)
+        }
 
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -80,7 +89,7 @@ class SettingsActivity : AppCompatActivity() {
 
             // App version info
             val versionPref = findPreference<Preference>("app_version")
-            versionPref?.summary = "Android v2.0.1-b9 / Fantag web/docker v3.4.0-b68 / https://fantag.sidneyshelton.com/"
+            versionPref?.summary = "Android v3.4.1-b88-launchfix / Fantag web/docker v3.4.1 / https://fantag.sidneyshelton.com/"
 
             // Clear WebView cache
             val clearCachePref = findPreference<Preference>("clear_cache")
