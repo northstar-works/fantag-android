@@ -62,10 +62,16 @@ class MainActivity : AppCompatActivity() {
         // The app uses a custom Toolbar. Keep launch resilient even if a bad theme slips into a build.
         try {
             setSupportActionBar(binding.toolbar)
+            supportActionBar?.title = ""
+            binding.toolbar.title = ""
         } catch (e: IllegalStateException) {
             Log.e(TAG, "Toolbar setup failed; continuing without support ActionBar", e)
         }
-        // Stable Android wrapper 2.0.3-b11: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.1-b69.
+        // Stable Android wrapper 2.0.5-b13: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.3-b71.
+        binding.tvShellVersion.text = "v3.4.3 · b71"
+        binding.btnHome.setOnClickListener { loadFantag() }
+        binding.btnRefresh.setOnClickListener { binding.webView.reload() }
+        binding.btnSettings.setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
         setupWebView()
         setupSwipeRefresh()
 
@@ -79,8 +85,9 @@ class MainActivity : AppCompatActivity() {
     // ── Toolbar ────────────────────────────────────────────────────────────────
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
+        // Explicit fixed toolbar buttons are defined in activity_main.xml.
+        // Do not inflate menu items; this prevents buttons from floating into the status bar.
+        return false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

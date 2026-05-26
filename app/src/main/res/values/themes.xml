@@ -25,6 +25,7 @@
         <item name="android:windowNoTitle">true</item>
 
         <!-- Toolbar -->
+        <item name="preferenceTheme">@style/FANTAGPreferenceTheme</item>
         <item name="actionBarStyle">@style/FANTAGToolbar</item>
         <item name="toolbarStyle">@style/FANTAGToolbar</item>
     </style>
@@ -49,6 +50,14 @@
 
     <!-- Splash/loading screen theme -->
     <style name="Theme.FANTAG.Splash" parent="Theme.FANTAG">
+        <item name="android:windowBackground">@color/fantag_bg_dark</item>
+    </style>
+
+
+    <style name="FANTAGPreferenceTheme" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="android:colorAccent">@color/fantag_green</item>
+        <item name="android:textColorPrimary">@color/toolbar_text</item>
+        <item name="android:textColorSecondary">#94a3b8</item>
         <item name="android:windowBackground">@color/fantag_bg_dark</item>
     </style>
 

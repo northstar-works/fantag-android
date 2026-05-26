@@ -5,13 +5,13 @@ plugins {
 
 
 // FANTAG auto-versioning for GitHub Actions / F-Droid repo publishing.
-// Override with -PFANTAG_VERSION_CODE=89 -PFANTAG_VERSION_NAME=2.0.3-b11 if needed.
-def fantagBaseVersion = (findProperty("FANTAG_BASE_VERSION") ?: System.getenv("FANTAG_BASE_VERSION") ?: "2.0.3").toString()
-def fantagVersionCodeRaw = (findProperty("FANTAG_VERSION_CODE") ?: System.getenv("FANTAG_VERSION_CODE") ?: System.getenv("GITHUB_RUN_NUMBER") ?: "89").toString()
+// Override with -PFANTAG_VERSION_CODE=91 -PFANTAG_VERSION_NAME=2.0.5-b13 if needed.
+def fantagBaseVersion = (findProperty("FANTAG_BASE_VERSION") ?: System.getenv("FANTAG_BASE_VERSION") ?: "2.0.5").toString()
+def fantagVersionCodeRaw = (findProperty("FANTAG_VERSION_CODE") ?: System.getenv("FANTAG_VERSION_CODE") ?: System.getenv("GITHUB_RUN_NUMBER") ?: "91").toString()
 def fantagVersionCode = fantagVersionCodeRaw.replaceAll(/[^0-9]/, "").toInteger()
 // Visible app version should follow the Android wrapper version, not the web/docker version.
-// Keep versionCode monotonic for Android/F-Droid updates; default local versionName is 2.0.3-b11.
-def fantagVersionName = (findProperty("FANTAG_VERSION_NAME") ?: System.getenv("FANTAG_VERSION_NAME") ?: "2.0.3-b11").toString()
+// Keep versionCode monotonic for Android/F-Droid updates; default local versionName is 2.0.5-b13.
+def fantagVersionName = (findProperty("FANTAG_VERSION_NAME") ?: System.getenv("FANTAG_VERSION_NAME") ?: "2.0.5-b13").toString()
 
 android {
     namespace 'com.northstarlabs.fantag'

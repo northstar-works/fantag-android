@@ -37,12 +37,12 @@ jobs:
         id: version
         run: |
           set -e
-          BASE_VERSION="2.0.3"
-          WRAPPER_BUILD="11"
-          MIN_VERSION_CODE="89"
+          BASE_VERSION="2.0.5"
+          WRAPPER_BUILD="13"
+          MIN_VERSION_CODE="91"
           # Android versionCode is internal and must only increase.
           # F-Droid/devices compare versionCode, so do NOT set this to 11 if b87/b88 was already published.
-          # Visible versionName is the Android wrapper version requested: 2.0.3-b11.
+          # Visible versionName is the Android wrapper version requested: 2.0.5-b13.
           RUN_CODE="${GITHUB_RUN_NUMBER:-$MIN_VERSION_CODE}"
           if [ "$RUN_CODE" -lt "$MIN_VERSION_CODE" ]; then RUN_CODE="$MIN_VERSION_CODE"; fi
           VERSION_CODE="$RUN_CODE"
@@ -151,7 +151,7 @@ jobs:
 
             This private Android build is a native WebView wrapper for your FANTAG web UI.
             Default server URL: https://fantag.sidneyshelton.com/
-            Web/Docker target version: 3.4.1-b69
+            Web/Docker target version: 3.4.3-b71
 
           RepoType: git
           Repo: https://github.com/northstar-works/fantag-android

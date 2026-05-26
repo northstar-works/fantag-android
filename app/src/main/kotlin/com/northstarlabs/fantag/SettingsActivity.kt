@@ -48,6 +48,8 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
+            listView.setBackgroundColor(android.graphics.Color.parseColor("#0f172a"))
+            listView.setPadding(0, 10, 0, 24)
 
             // Server URL preference
             val serverUrlPref = findPreference<EditTextPreference>(MainActivity.PREF_SERVER_URL)
@@ -89,7 +91,7 @@ class SettingsActivity : AppCompatActivity() {
 
             // App version info
             val versionPref = findPreference<Preference>("app_version")
-            versionPref?.summary = "Android v3.4.1-b88-launchfix / Fantag web/docker v3.4.1 / https://fantag.sidneyshelton.com/"
+            versionPref?.summary = "Android shell v2.0.5-b13 / Fantag web v3.4.3-b71 / https://fantag.sidneyshelton.com/"
 
             // Clear WebView cache
             val clearCachePref = findPreference<Preference>("clear_cache")

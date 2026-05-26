@@ -6,7 +6,7 @@
 
         <EditTextPreference
             android:key="server_url"
-            android:title="FANTAG Server URL"
+            android:title="Server URL"
             android:summary="https://fantag.sidneyshelton.com/"
             android:defaultValue="https://fantag.sidneyshelton.com/"
             android:inputType="textUri"
@@ -40,7 +40,7 @@
         <Preference
             android:key="app_info"
             android:title="FANTAG"
-            android:summary="Fantasy baseball roster tracker by Northstar Labs. Self-hosted FastAPI + React backend."
+            android:summary="Android shell loads the live Fantag web app from your selected server URL. Web content version comes from the deployed server."
             android:selectable="false" />
 
     </PreferenceCategory>

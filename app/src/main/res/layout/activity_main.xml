@@ -9,15 +9,90 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/fantag_bg_dark"
+        android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-            app:title="@string/app_name"
-            app:titleTextColor="@color/toolbar_text" />
+            android:layout_height="64dp"
+            android:background="@color/fantag_bg_dark"
+            android:contentInsetStart="0dp"
+            android:contentInsetEnd="0dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetEnd="0dp"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Dark"
+            app:title=""
+            app:titleTextColor="@color/toolbar_text">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="8dp">
+
+                <ImageView
+                    android:id="@+id/imgShellLogo"
+                    android:layout_width="86dp"
+                    android:layout_height="42dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="FANTAG"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/fantag_icon_full_rounded" />
+
+                <TextView
+                    android:id="@+id/tvShellVersion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/shell_version_badge_bg"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="v3.4.3 · b71"
+                    android:textColor="#94a3b8"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:id="@+id/btnHome"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Home"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_home"
+                    app:tint="@color/toolbar_text" />
+
+                <ImageButton
+                    android:id="@+id/btnRefresh"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Refresh"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_refresh"
+                    app:tint="@color/toolbar_text" />
+
+                <ImageButton
+                    android:id="@+id/btnSettings"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Settings"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="@color/toolbar_text" />
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
 
         <ProgressBar
             android:id="@+id/progressBar"

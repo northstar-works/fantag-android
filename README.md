@@ -59,9 +59,9 @@ If you want to use a local IP (e.g. `http://192.168.1.100:8011`) instead of the 
 
 ## Version
 
-Android wrapper: `2.0.3-b11`
+Android wrapper: `2.0.5-b13`
 
-Web/server target loaded by the wrapper: `3.4.1-b69`
+Web/server target loaded by the wrapper: `3.4.3-b71`
 
 F-Droid should display the Android wrapper version, not the web/server version. Devices update by Android `versionCode`, which is kept monotonic by the workflow.
 
