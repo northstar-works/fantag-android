@@ -14,7 +14,7 @@ Description: |-
 
   This private Android build is a native WebView wrapper for your FANTAG web UI.
   Default server URL: https://fantag.sidneyshelton.com/
-  Web/Docker target version: 3.4.0-b68
+  Web/Docker target version: 3.4.1-b69
 
 RepoType: git
 Repo: https://github.com/northstar-works/fantag-android
@@ -22,5 +22,5 @@ Repo: https://github.com/northstar-works/fantag-android
 AutoUpdateMode: None
 UpdateCheckMode: None
 
-CurrentVersion: 2.0.1-b9
-CurrentVersionCode: 87
+CurrentVersion: 2.0.3-b11
+CurrentVersionCode: 89

@@ -27,7 +27,7 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 
 On first launch the app connects to:
 ```
-http://sidscri.from-tx.com:8010
+https://fantag.sidneyshelton.com/
 ```
 
 To change the server URL: **overflow menu → Settings → FANTAG Server URL**
@@ -54,18 +54,20 @@ If you want to use a local IP (e.g. `http://192.168.1.100:8011`) instead of the 
 - 🗑️ Clear cache option in Settings
 - Dark theme matching FANTAG's slate color scheme
 - 🚦 Red/green/blue confirmed-lineup alert color support
-- 📲 Device push-token registration to `/push/register` on your Fantag backend
+- Native Android WebView wrapper versioning for F-Droid display
+- Web/server content loaded from the live FANTAG server
 
 ## Version
 
-Tracks FANTAG v3.2.9 / Build 65 persistent-roster build, Android wrapper v3.2.9-b65-fdroid1
+Android wrapper: `2.0.3-b11`
+
+Web/server target loaded by the wrapper: `3.4.1-b69`
+
+F-Droid should display the Android wrapper version, not the web/server version. Devices update by Android `versionCode`, which is kept monotonic by the workflow.
 
 ## Distribution
 
-Add to your Northstar Labs F-Droid repo alongside sv-config-android:
-```
-northstar-labs/fdroid
-```
+GitHub Actions builds this repo, copies the APK into `northstar-works/fdroid`, and updates `metadata/com.northstarlabs.fantag.yml`. The APK filename is generated from the actual APK package/versionCode, for example `com.northstarlabs.fantag_89.apk`.
 
 
 ## Push Notifications

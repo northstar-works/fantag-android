@@ -1,0 +1,5 @@
+Android wrapper versionName: 2.0.3-b11
+Default/min local versionCode: 89
+Web/server target: 3.4.1-b69
+Default URL: https://fantag.sidneyshelton.com/
+F-Droid CurrentVersion should follow Android wrapper versionName, not web/server version.

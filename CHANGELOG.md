@@ -1,3 +1,11 @@
+# v2.0.3-b11 - Android wrapper / F-Droid alignment
+
+- Set Android wrapper default `versionName` to `2.0.3-b11`.
+- Set local/default Android `versionCode` floor to `89` so F-Droid/devices can update from prior b87/b88 publishes while still showing wrapper build `b11`.
+- Updated GitHub Actions F-Droid workflow so `CurrentVersion` comes from the APK as `2.0.3-b11` and `CurrentVersionCode` comes from the monotonic APK `versionCode`.
+- Kept the WebView default server URL as `https://fantag.sidneyshelton.com/`.
+- Documented web/server target as `3.4.1-b69`; UI/content fixes should come from the live web server, not from bundled Android assets.
+
 # v3.3.0-b78-stable-no-push
 
 - Removed Firebase/FCM push notification code from Android wrapper.

@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IllegalStateException) {
             Log.e(TAG, "Toolbar setup failed; continuing without support ActionBar", e)
         }
-        // Stable wrapper v3.4.1-b88-launchfix: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.0-b68.
+        // Stable Android wrapper 2.0.3-b11: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.1-b69.
         setupWebView()
         setupSwipeRefresh()
 
