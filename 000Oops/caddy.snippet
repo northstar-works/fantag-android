@@ -1,0 +1,25 @@
+# ─── FANTAG ───────────────────────────────────────────────────────────────────
+# Add this block to your existing Caddyfile on Ubuntu-Services.
+# Assumes your Caddy container is on the same Docker network as fantag-api.
+
+fantag.sidscri.tplinkdns.com {
+    # API — proxy everything under /api to FastAPI
+    handle /api/* {
+        uri strip_prefix /api
+        reverse_proxy fantag-api:8000
+    }
+
+    # UI — serve the built React app (static files via nginx or direct)
+    # Option A: separate nginx container (fantag-ui, port 8012)
+    handle {
+        reverse_proxy fantag-ui:80
+    }
+
+    # Option B: if you just want the API for now (no separate UI container),
+    # replace the handle block above with:
+    # handle {
+    #     reverse_proxy fantag-api:8000
+    # }
+
+    tls internal   # or your ACME config if you have a public cert
+}

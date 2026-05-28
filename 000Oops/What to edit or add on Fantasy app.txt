@@ -1,0 +1,2 @@
+What to edit or add on Fantasy app:
+I want a setting that will automatically adjust the pre group of games starts 30 min before scheduled start based on the days schedule. if first game is scheduled for 10am then I want it to auto fire at 0930, like wise if the next group of games start at 3:20 or 345 I want it to fire at 2:50 and 3:15 30min can be adjusted to 15min, 45min, 1 hour per group.

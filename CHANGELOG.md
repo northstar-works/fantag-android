@@ -1,16 +1,16 @@
-## Android shell v2.0.5-b13 / web target v3.4.3-b71
+## Android shell v2.0.6-b14 / web target v3.4.4-b72
 
 - Kept Android wrapper/F-Droid version separate from Fantag web version.
 - Lowered native toolbar controls below the device status bar and removed duplicate toolbar title text.
 - Polished native Settings readability for dark Fantag styling.
 
-# v2.0.5-b13 - Android wrapper / F-Droid alignment
+# v2.0.6-b14 - Android wrapper / F-Droid alignment
 
-- Set Android wrapper default `versionName` to `2.0.5-b13`.
-- Set local/default Android `versionCode` floor to `91` so F-Droid/devices can update from prior b87/b88/b89 publishes while still showing wrapper build `b13`.
-- Updated GitHub Actions F-Droid workflow so `CurrentVersion` comes from the APK as `2.0.5-b13` and `CurrentVersionCode` comes from the monotonic APK `versionCode`.
+- Set Android wrapper default `versionName` to `2.0.6-b14`.
+- Set local/default Android `versionCode` floor to `91` so F-Droid/devices can update from prior b87/b88/b89 publishes while still showing wrapper build `b14`.
+- Updated GitHub Actions F-Droid workflow so `CurrentVersion` comes from the APK as `2.0.6-b14` and `CurrentVersionCode` comes from the monotonic APK `versionCode`.
 - Kept the WebView default server URL as `https://fantag.sidneyshelton.com/`.
-- Documented web/server target as `3.4.3-b71`; UI/content fixes should come from the live web server, not from bundled Android assets.
+- Documented web/server target as `3.4.4-b72`; UI/content fixes should come from the live web server, not from bundled Android assets.
 
 # v3.3.0-b78-stable-no-push
 

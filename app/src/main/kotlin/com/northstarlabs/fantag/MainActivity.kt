@@ -67,8 +67,8 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IllegalStateException) {
             Log.e(TAG, "Toolbar setup failed; continuing without support ActionBar", e)
         }
-        // Stable Android wrapper 2.0.5-b13: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.3-b71.
-        binding.tvShellVersion.text = "v3.4.3 · b71"
+        // Stable Android wrapper 2.0.6-b14: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.4-b72.
+        binding.tvShellVersion.text = "v3.4.4 · b72"
         binding.btnHome.setOnClickListener { loadFantag() }
         binding.btnRefresh.setOnClickListener { binding.webView.reload() }
         binding.btnSettings.setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
