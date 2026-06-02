@@ -5,11 +5,9 @@ plugins {
 
 
 // FANTAG auto-versioning for GitHub Actions / F-Droid repo publishing.
-// Do not fall back to GITHUB_RUN_NUMBER here. GitHub run numbers can be lower
-// than the current published Android versionCode, which makes F-Droid ignore APKs.
 // Override with -PFANTAG_VERSION_CODE=93 -PFANTAG_VERSION_NAME=2.0.7-b15 if needed.
 def fantagBaseVersion = (findProperty("FANTAG_BASE_VERSION") ?: System.getenv("FANTAG_BASE_VERSION") ?: "2.0.7").toString()
-def fantagVersionCodeRaw = (findProperty("FANTAG_VERSION_CODE") ?: System.getenv("FANTAG_VERSION_CODE") ?: "93").toString()
+def fantagVersionCodeRaw = (findProperty("FANTAG_VERSION_CODE") ?: System.getenv("FANTAG_VERSION_CODE") ?: System.getenv("GITHUB_RUN_NUMBER") ?: "93").toString()
 def fantagVersionCode = fantagVersionCodeRaw.replaceAll(/[^0-9]/, "").toInteger()
 // Visible app version should follow the Android wrapper version, not the web/docker version.
 // Keep versionCode monotonic for Android/F-Droid updates; default local versionName is 2.0.7-b15.
