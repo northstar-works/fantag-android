@@ -67,11 +67,18 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IllegalStateException) {
             Log.e(TAG, "Toolbar setup failed; continuing without support ActionBar", e)
         }
-        // Stable Android wrapper 2.0.6-b14: Firebase/FCM push notifications intentionally disabled in this build. Default target: https://fantag.sidneyshelton.com/. Web/Docker target: 3.4.4-b72.
-        binding.tvShellVersion.text = "v3.4.4 · b72"
+        // Stable Android wrapper 2.0.7-b15: Firebase/FCM push notifications intentionally disabled.
+        // Native shell quick actions mirror Fantag web v3.5.0-b97 toolbar features.
+        binding.tvShellVersion.text = "web v3.5.0 · b97"
         binding.btnHome.setOnClickListener { loadFantag() }
         binding.btnRefresh.setOnClickListener { binding.webView.reload() }
         binding.btnSettings.setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
+        binding.btnShellRoster.setOnClickListener { runFantagShellAction("roster") }
+        binding.btnShellWatch.setOnClickListener { runFantagShellAction("watch") }
+        binding.btnShellFind.setOnClickListener { runFantagShellAction("find") }
+        binding.btnShellCompare.setOnClickListener { runFantagShellAction("compare") }
+        binding.btnShellAdd.setOnClickListener { runFantagShellAction("add") }
+        binding.btnShellStatus.setOnClickListener { runFantagShellAction("status") }
         setupWebView()
         setupSwipeRefresh()
 
@@ -167,6 +174,54 @@ class MainActivity : AppCompatActivity() {
         }
         showLoadingState()
         binding.webView.loadUrl(url)
+    }
+
+    /**
+     * Native shortcuts for GUI features that were added in the web app.
+     * This shell is still a WebView wrapper; it drives the web UI rather than
+     * duplicating roster/discover/compare logic in Kotlin.
+     */
+    private fun runFantagShellAction(action: String) {
+        val js = """
+            (function(){
+              function norm(s){ return (s || '').replace(/\s+/g,' ').trim().toLowerCase(); }
+              function visible(el){
+                if (!el) return false;
+                const r = el.getBoundingClientRect();
+                const st = window.getComputedStyle(el);
+                return r.width > 0 && r.height > 0 && st.visibility !== 'hidden' && st.display !== 'none';
+              }
+              function clickButtonText(regex){
+                const buttons = Array.from(document.querySelectorAll('button, [role="button"]'));
+                const hit = buttons.find(b => visible(b) && regex.test(norm(b.textContent)));
+                if (hit) { hit.click(); return true; }
+                return false;
+              }
+              function clickByTitle(regex){
+                const hit = Array.from(document.querySelectorAll('[title]')).find(e => visible(e) && regex.test(norm(e.getAttribute('title'))));
+                if (hit) { hit.click(); return true; }
+                return false;
+              }
+              const action = '$action';
+              let ok = false;
+              if (action === 'roster') ok = clickButtonText(/my roster/);
+              else if (action === 'watch') ok = clickButtonText(/watch list/);
+              else if (action === 'find') ok = clickButtonText(/^find$/) || clickButtonText(/find players/);
+              else if (action === 'compare') ok = clickButtonText(/^compare$/) || clickButtonText(/cancel/);
+              else if (action === 'add') ok = clickButtonText(/add player/);
+              else if (action === 'status') ok = clickButtonText(/^status$/) || clickByTitle(/manual status refresh|fastest lineup/);
+              if (!ok) {
+                window.dispatchEvent(new CustomEvent('fantag-shell-action', { detail: { action: action }}));
+              }
+              return ok ? 'ok:' + action : 'missing:' + action;
+            })();
+        """.trimIndent()
+        binding.webView.evaluateJavascript(js) { result ->
+            if (result?.contains("missing") == true) {
+                val label = action.replaceFirstChar { it.uppercase() }
+                Toast.makeText(this, "Open the roster page first, then try $label", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onBackPressed() {

@@ -91,7 +91,7 @@ class SettingsActivity : AppCompatActivity() {
 
             // App version info
             val versionPref = findPreference<Preference>("app_version")
-            versionPref?.summary = "Android shell v2.0.6-b14 / Fantag web v3.4.4-b72 / https://fantag.sidneyshelton.com/"
+            versionPref?.summary = "Android shell v2.0.7-b15 / Fantag web v3.5.0-b97 / https://fantag.sidneyshelton.com/"
 
             // Clear WebView cache
             val clearCachePref = findPreference<Preference>("clear_cache")
