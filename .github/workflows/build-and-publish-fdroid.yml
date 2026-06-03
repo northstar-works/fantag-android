@@ -171,8 +171,17 @@ jobs:
         run: |
           set -e
 
-          mkdir -p fdroid-repo/repo fdroid-repo/metadata
+          mkdir -p fdroid-repo/repo fdroid-repo/repo/icons fdroid-repo/metadata
           cp "${{ steps.apk.outputs.apk_path }}" "fdroid-repo/repo/${{ steps.apk.outputs.out_name }}"
+
+          # Publish the app icon for the F-Droid repo listing. The source lives in
+          # this repo at fdroid-assets/; copy it into repo/icons/ so the index and
+          # the F-Droid app show it even if APK icon extraction is skipped.
+          ICON_NAME=""
+          if [ -f "fdroid-assets/com.northstarlabs.fantag.png" ]; then
+            ICON_NAME="com.northstarlabs.fantag.png"
+            cp "fdroid-assets/com.northstarlabs.fantag.png" "fdroid-repo/repo/icons/$ICON_NAME"
+          fi
 
           cat > fdroid-repo/metadata/com.northstarlabs.fantag.yml <<EOF
           Categories:
@@ -184,6 +193,7 @@ jobs:
           AuthorWebSite: https://github.com/northstar-works
 
           Name: FANTAG
+          Icon: com.northstarlabs.fantag.png
           Summary: Fantasy baseball roster tracker for your self-hosted FANTAG server
           Description: |-
             FANTAG is a personal fantasy baseball roster management tool that connects
