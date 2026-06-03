@@ -15,9 +15,29 @@ def fantagVersionCode = fantagVersionCodeRaw.replaceAll(/[^0-9]/, "").toInteger(
 // Keep versionCode monotonic for Android/F-Droid updates; default local versionName is 2.0.7-b15.
 def fantagVersionName = (findProperty("FANTAG_VERSION_NAME") ?: System.getenv("FANTAG_VERSION_NAME") ?: "2.0.7-b15").toString()
 
+// Persistent F-Droid release signing. The keystore is restored from a GitHub
+// secret (FDROID_KEYSTORE_B64) in CI and passed in via -P properties so the
+// signer stays identical across runners. Without this, F-Droid rejects updates
+// with a signer-mismatch error. Falls back to debug signing for local builds.
+def fdroidStoreFile = findProperty("FDROID_STORE_FILE") ?: System.getenv("FDROID_STORE_FILE")
+def fdroidStorePassword = findProperty("FDROID_STORE_PASSWORD") ?: System.getenv("FDROID_STORE_PASSWORD")
+def fdroidKeyAlias = findProperty("FDROID_KEY_ALIAS") ?: System.getenv("FDROID_KEY_ALIAS")
+def fdroidKeyPassword = findProperty("FDROID_KEY_PASSWORD") ?: System.getenv("FDROID_KEY_PASSWORD")
+
 android {
     namespace 'com.northstarlabs.fantag'
     compileSdk 35
+
+    signingConfigs {
+        fdroidRelease {
+            if (fdroidStoreFile) {
+                storeFile file(fdroidStoreFile)
+                storePassword fdroidStorePassword
+                keyAlias fdroidKeyAlias
+                keyPassword fdroidKeyPassword
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "com.northstarlabs.fantag"
@@ -33,6 +53,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (fdroidStoreFile) {
+                signingConfig signingConfigs.fdroidRelease
+            }
         }
     }
 

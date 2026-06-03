@@ -33,16 +33,28 @@ jobs:
             chmod +x ./gradlew
           fi
 
+      - name: Restore persistent release keystore
+        id: keystore
+        env:
+          FDROID_KEYSTORE_B64: ${{ secrets.FDROID_KEYSTORE_B64 }}
+        run: |
+          set -e
+          if [ -z "$FDROID_KEYSTORE_B64" ]; then
+            echo "ERROR: FDROID_KEYSTORE_B64 secret is missing. F-Droid needs a persistent signer."
+            exit 1
+          fi
+          echo "$FDROID_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/fdroid-release.keystore"
+          echo "store_file=$RUNNER_TEMP/fdroid-release.keystore" >> "$GITHUB_OUTPUT"
+
       - name: Compute Android version
         id: version
         run: |
           set -e
-          BASE_VERSION="2.0.6"
-          WRAPPER_BUILD="13"
-          MIN_VERSION_CODE="92"
-          # Android versionCode is internal and must only increase.
-          # F-Droid/devices compare versionCode, so do NOT set this to 11 if b87/b88 was already published.
-          # Visible versionName is the Android wrapper version requested: 2.0.6-b14.
+          BASE_VERSION="2.0.7"
+          WRAPPER_BUILD="15"
+          MIN_VERSION_CODE="93"
+          # versionCode must only increase. F-Droid/devices compare versionCode,
+          # so never set this below the highest already-published code.
           RUN_CODE="${GITHUB_RUN_NUMBER:-$MIN_VERSION_CODE}"
           if [ "$RUN_CODE" -lt "$MIN_VERSION_CODE" ]; then RUN_CODE="$MIN_VERSION_CODE"; fi
           VERSION_CODE="$RUN_CODE"
@@ -50,31 +62,33 @@ jobs:
           echo "base_version=$BASE_VERSION" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
-          echo "FANTAG_BASE_VERSION=$BASE_VERSION" >> "$GITHUB_ENV"
-          echo "FANTAG_VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
-          echo "FANTAG_VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
           echo "Building Fantag Android $VERSION_NAME ($VERSION_CODE)"
 
-      - name: Build debug APK
+      - name: Build signed release APK
+        env:
+          FDROID_STORE_FILE: ${{ steps.keystore.outputs.store_file }}
+          FDROID_STORE_PASSWORD: ${{ secrets.FDROID_KEYSTORE_PASSWORD }}
+          FDROID_KEY_ALIAS: ${{ secrets.FDROID_KEY_ALIAS }}
+          FDROID_KEY_PASSWORD: ${{ secrets.FDROID_KEY_PASSWORD }}
         run: |
-          if [ -f "./gradlew" ]; then
-            ./gradlew --no-daemon clean assembleDebug \
-              -PFANTAG_BASE_VERSION="${{ steps.version.outputs.base_version }}" \
-              -PFANTAG_VERSION_CODE="${{ steps.version.outputs.version_code }}" \
-              -PFANTAG_VERSION_NAME="${{ steps.version.outputs.version_name }}"
-          else
-            gradle --no-daemon clean assembleDebug \
-              -PFANTAG_BASE_VERSION="${{ steps.version.outputs.base_version }}" \
-              -PFANTAG_VERSION_CODE="${{ steps.version.outputs.version_code }}" \
-              -PFANTAG_VERSION_NAME="${{ steps.version.outputs.version_name }}"
-          fi
+          ./gradlew --no-daemon clean assembleRelease \
+            -PFANTAG_BASE_VERSION="${{ steps.version.outputs.base_version }}" \
+            -PFANTAG_VERSION_CODE="${{ steps.version.outputs.version_code }}" \
+            -PFANTAG_VERSION_NAME="${{ steps.version.outputs.version_name }}" \
+            -PFDROID_STORE_FILE="$FDROID_STORE_FILE" \
+            -PFDROID_STORE_PASSWORD="$FDROID_STORE_PASSWORD" \
+            -PFDROID_KEY_ALIAS="$FDROID_KEY_ALIAS" \
+            -PFDROID_KEY_PASSWORD="$FDROID_KEY_PASSWORD"
 
       - name: Locate and verify APK
         id: apk
         run: |
           set -e
 
-          APK="$(find app/build/outputs/apk -type f -name "*.apk" | grep -v androidTest | head -n 1)"
+          APK="$(find app/build/outputs/apk/release -type f -name "*.apk" | grep -v androidTest | grep -v unsigned | head -n 1)"
+          if [ -z "$APK" ]; then
+            APK="$(find app/build/outputs/apk -type f -name "*.apk" | grep -v androidTest | grep -v unsigned | head -n 1)"
+          fi
 
           if [ -z "$APK" ]; then
             echo "ERROR: No APK found."
@@ -104,6 +118,13 @@ jobs:
             exit 1
           fi
 
+          # Verify the APK is actually signed. An unsigned/debug APK breaks F-Droid updates.
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -n 1)"
+          if ! "$APKSIGNER" verify --print-certs "$APK" >/dev/null 2>&1; then
+            echo "ERROR: APK failed signature verification."
+            exit 1
+          fi
+
           OUT_NAME="${PACKAGE}_${VERSION_CODE}.apk"
 
           echo "package=$PACKAGE" >> "$GITHUB_OUTPUT"
@@ -126,6 +147,12 @@ jobs:
       - name: Checkout fdroid repo
         run: |
           git clone https://x-access-token:${{ secrets.FDROID_REPO_PAT }}@github.com/northstar-works/fdroid.git fdroid-repo
+
+      - name: Install F-Droid server tools
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y fdroidserver
 
       - name: Copy APK and update F-Droid metadata
         run: |
@@ -151,7 +178,7 @@ jobs:
 
             This private Android build is a native WebView wrapper for your FANTAG web UI.
             Default server URL: https://fantag.sidneyshelton.com/
-            Web/Docker target version: 3.4.4-b72
+            Web/Docker target version: 3.5.0-b87
 
           RepoType: git
           Repo: https://github.com/northstar-works/fantag-android
@@ -168,7 +195,15 @@ jobs:
           echo "Updated metadata:"
           cat fdroid-repo/metadata/com.northstarlabs.fantag.yml
 
-      - name: Commit APK to fdroid repo
+      - name: Regenerate F-Droid index
+        run: |
+          set -e
+          cd fdroid-repo
+          # config.yml + signing keystore live in the fdroid repo; fdroid update
+          # rebuilds the signed index so the F-Droid app sees the new versionCode.
+          fdroid update --create-metadata --pretty || fdroid update --pretty
+
+      - name: Commit APK and index to fdroid repo
         run: |
           set -e
 
@@ -177,7 +212,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add repo/${{ steps.apk.outputs.out_name }} metadata/com.northstarlabs.fantag.yml
+          git add repo metadata
 
           if git diff --cached --quiet; then
             echo "No fdroid repo changes to commit."
