@@ -46,22 +46,39 @@ jobs:
           echo "$FDROID_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/fdroid-release.keystore"
           echo "store_file=$RUNNER_TEMP/fdroid-release.keystore" >> "$GITHUB_OUTPUT"
 
+      - name: Checkout fdroid repo
+        run: |
+          git clone https://x-access-token:${{ secrets.FDROID_REPO_PAT }}@github.com/northstar-works/fdroid.git fdroid-repo
+
       - name: Compute Android version
         id: version
         run: |
           set -e
-          BASE_VERSION="2.0.7"
-          WRAPPER_BUILD="15"
-          MIN_VERSION_CODE="93"
-          # versionCode must only increase. F-Droid/devices compare versionCode,
-          # so never set this below the highest already-published code.
-          RUN_CODE="${GITHUB_RUN_NUMBER:-$MIN_VERSION_CODE}"
-          if [ "$RUN_CODE" -lt "$MIN_VERSION_CODE" ]; then RUN_CODE="$MIN_VERSION_CODE"; fi
-          VERSION_CODE="$RUN_CODE"
-          VERSION_NAME="${BASE_VERSION}-b${WRAPPER_BUILD}"
+          PKG="com.northstarlabs.fantag"
+          BASE_VERSION="2.0"
+
+          # Fully automatic versioning. Scan the APKs already published in the
+          # fdroid repo for this package and take the highest versionCode, then
+          # add 1. This guarantees a monotonically increasing versionCode without
+          # any manual bumping. versionName is derived as ${BASE_VERSION}.<code>.
+          HIGHEST=0
+          if [ -d fdroid-repo/repo ]; then
+            for f in fdroid-repo/repo/${PKG}_*.apk; do
+              [ -e "$f" ] || continue
+              CODE="$(basename "$f" | sed -n "s/^${PKG}_\([0-9][0-9]*\)\.apk$/\1/p")"
+              if [ -n "$CODE" ] && [ "$CODE" -gt "$HIGHEST" ]; then
+                HIGHEST="$CODE"
+              fi
+            done
+          fi
+
+          VERSION_CODE=$((HIGHEST + 1))
+          VERSION_NAME="${BASE_VERSION}.${VERSION_CODE}"
+
           echo "base_version=$BASE_VERSION" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "Highest published versionCode: $HIGHEST"
           echo "Building Fantag Android $VERSION_NAME ($VERSION_CODE)"
 
       - name: Build signed release APK
@@ -143,10 +160,6 @@ jobs:
         with:
           name: fantag-apk-${{ steps.apk.outputs.version_code }}
           path: ${{ steps.apk.outputs.apk_path }}
-
-      - name: Checkout fdroid repo
-        run: |
-          git clone https://x-access-token:${{ secrets.FDROID_REPO_PAT }}@github.com/northstar-works/fdroid.git fdroid-repo
 
       - name: Install F-Droid server tools
         run: |
