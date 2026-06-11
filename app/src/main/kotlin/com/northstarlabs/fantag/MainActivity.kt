@@ -11,6 +11,9 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -28,11 +31,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var isFirstLoad = true
+    private var isForeground = false
+    private var lastForegroundRefreshAt = 0L
+    private val foregroundHandler = Handler(Looper.getMainLooper())
+    private val foregroundRefreshRunnable = object : Runnable {
+        override fun run() {
+            if (!isForeground) return
+            refreshShellAndWebApp("periodic", forcePageReload = false)
+            foregroundHandler.postDelayed(this, PERIODIC_REFRESH_MS)
+        }
+    }
 
     companion object {
         private const val TAG = "FANTAG"
         const val PREF_SERVER_URL = "server_url"
         const val DEFAULT_URL = "https://fantag.sidneyshelton.com/"
+        private const val PERIODIC_REFRESH_MS = 60_000L
+        private const val FOREGROUND_REFRESH_MIN_MS = 15_000L
     }
 
     // File chooser for screenshot imports
@@ -67,18 +82,12 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IllegalStateException) {
             Log.e(TAG, "Toolbar setup failed; continuing without support ActionBar", e)
         }
-        // Stable Android wrapper 2.0.7-b15: Firebase/FCM push notifications intentionally disabled.
-        // Native shell quick actions mirror Fantag web v3.5.0-b97 toolbar features.
-        binding.tvShellVersion.text = "web v3.5.0 · b97"
+        // Stable Android wrapper: Firebase/FCM push notifications intentionally disabled.
+        // The native shell only provides Home/Refresh plus the actual Android shell version.
+        // Web/backend navigation and status buttons live inside the web app itself.
+        updateShellVersionBadge()
         binding.btnHome.setOnClickListener { loadFantag() }
-        binding.btnRefresh.setOnClickListener { binding.webView.reload() }
-        binding.btnSettings.setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
-        binding.btnShellRoster.setOnClickListener { runFantagShellAction("roster") }
-        binding.btnShellWatch.setOnClickListener { runFantagShellAction("watch") }
-        binding.btnShellFind.setOnClickListener { runFantagShellAction("find") }
-        binding.btnShellCompare.setOnClickListener { runFantagShellAction("compare") }
-        binding.btnShellAdd.setOnClickListener { runFantagShellAction("add") }
-        binding.btnShellStatus.setOnClickListener { runFantagShellAction("status") }
+        binding.btnRefresh.setOnClickListener { refreshShellAndWebApp("manual", forcePageReload = true) }
         setupWebView()
         setupSwipeRefresh()
 
@@ -138,8 +147,11 @@ class MainActivity : AppCompatActivity() {
         ws.allowFileAccess = true
         ws.allowContentAccess = true
 
-        // Cache strategy
-        ws.cacheMode = WebSettings.LOAD_DEFAULT
+        // Avoid stale roster/status data when the shell opens or resumes.
+        ws.cacheMode = WebSettings.LOAD_NO_CACHE
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ws.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+        }
 
         // Media
         ws.mediaPlaybackRequiresUserGesture = false
@@ -155,7 +167,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
-            binding.webView.reload()
+            refreshShellAndWebApp("swipe", forcePageReload = true)
         }
         binding.swipeRefresh.setColorSchemeResources(
             R.color.fantag_green,
@@ -173,54 +185,92 @@ class MainActivity : AppCompatActivity() {
             return
         }
         showLoadingState()
-        binding.webView.loadUrl(url)
+        updateShellVersionBadge()
+        binding.webView.loadUrl(url, noCacheHeaders())
+    }
+
+    private fun updateShellVersionBadge() {
+        binding.tvShellVersion.text = "shell v${BuildConfig.VERSION_NAME} · ${BuildConfig.VERSION_CODE}"
+    }
+
+    private fun noCacheHeaders(): Map<String, String> = mapOf(
+        "Cache-Control" to "no-cache, no-store, must-revalidate",
+        "Pragma" to "no-cache"
+    )
+
+    private fun startForegroundRefreshLoop() {
+        foregroundHandler.removeCallbacks(foregroundRefreshRunnable)
+        foregroundHandler.postDelayed(foregroundRefreshRunnable, PERIODIC_REFRESH_MS)
+    }
+
+    private fun refreshShellAndWebApp(reason: String, forcePageReload: Boolean) {
+        updateShellVersionBadge()
+
+        if (forcePageReload) {
+            if (!isNetworkAvailable()) {
+                val currentUrl = binding.webView.url ?: DEFAULT_URL
+                showOfflineState(currentUrl)
+                return
+            }
+            binding.swipeRefresh.isRefreshing = true
+            val currentUrl = binding.webView.url
+            if (currentUrl.isNullOrBlank()) {
+                loadFantag()
+            } else {
+                binding.webView.reload()
+            }
+            return
+        }
+
+        triggerWebAppDataRefresh(reason)
     }
 
     /**
-     * Native shortcuts for GUI features that were added in the web app.
-     * This shell is still a WebView wrapper; it drives the web UI rather than
-     * duplicating roster/discover/compare logic in Kotlin.
+     * Ask the web app to refresh its own live/status data without running any
+     * native background job. This only runs while the Activity is resumed.
+     * The web app can listen for either event name below, and we also click a
+     * visible in-page Refresh/Sync button if one exists.
      */
-    private fun runFantagShellAction(action: String) {
+    private fun triggerWebAppDataRefresh(reason: String) {
+        if (binding.webView.url.isNullOrBlank()) return
+
+        val safeReason = reason.replace("\\", "\\\\").replace("'", "\\'")
         val js = """
             (function(){
-              function norm(s){ return (s || '').replace(/\s+/g,' ').trim().toLowerCase(); }
+              const detail = { source: 'fantag-android-shell', reason: '$safeReason', ts: Date.now() };
               function visible(el){
                 if (!el) return false;
                 const r = el.getBoundingClientRect();
                 const st = window.getComputedStyle(el);
                 return r.width > 0 && r.height > 0 && st.visibility !== 'hidden' && st.display !== 'none';
               }
-              function clickButtonText(regex){
-                const buttons = Array.from(document.querySelectorAll('button, [role="button"]'));
-                const hit = buttons.find(b => visible(b) && regex.test(norm(b.textContent)));
-                if (hit) { hit.click(); return true; }
-                return false;
+              function fire(name){
+                try { window.dispatchEvent(new CustomEvent(name, { detail: detail })); } catch(e) {}
               }
-              function clickByTitle(regex){
-                const hit = Array.from(document.querySelectorAll('[title]')).find(e => visible(e) && regex.test(norm(e.getAttribute('title'))));
-                if (hit) { hit.click(); return true; }
-                return false;
-              }
-              const action = '$action';
-              let ok = false;
-              if (action === 'roster') ok = clickButtonText(/my roster/);
-              else if (action === 'watch') ok = clickButtonText(/watch list/);
-              else if (action === 'find') ok = clickButtonText(/^find$/) || clickButtonText(/find players/);
-              else if (action === 'compare') ok = clickButtonText(/^compare$/) || clickButtonText(/cancel/);
-              else if (action === 'add') ok = clickButtonText(/add player/);
-              else if (action === 'status') ok = clickButtonText(/^status$/) || clickByTitle(/manual status refresh|fastest lineup/);
-              if (!ok) {
-                window.dispatchEvent(new CustomEvent('fantag-shell-action', { detail: { action: action }}));
-              }
-              return ok ? 'ok:' + action : 'missing:' + action;
+              fire('fantag-android-refresh');
+              fire('fantag:shell-refresh');
+              fire('fantag:foreground-refresh');
+
+              try {
+                if (window.FANTAG && typeof window.FANTAG.refresh === 'function') { window.FANTAG.refresh(detail); return 'FANTAG.refresh'; }
+                if (window.fantag && typeof window.fantag.refresh === 'function') { window.fantag.refresh(detail); return 'fantag.refresh'; }
+                if (typeof window.fantagRefresh === 'function') { window.fantagRefresh(detail); return 'fantagRefresh'; }
+                if (typeof window.refreshFantag === 'function') { window.refreshFantag(detail); return 'refreshFantag'; }
+              } catch(e) {}
+
+              const controls = Array.from(document.querySelectorAll('button, [role="button"], [title], [aria-label]'));
+              const hit = controls.find(function(el){
+                if (!visible(el) || el.disabled) return false;
+                const label = ((el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '') + ' ' + (el.textContent || '')).toLowerCase();
+                return /refresh|reload|sync|update/.test(label);
+              });
+              if (hit) { hit.click(); return 'clicked:' + ((hit.textContent || hit.getAttribute('aria-label') || hit.getAttribute('title') || '').trim()); }
+              return 'event-only';
             })();
         """.trimIndent()
-        binding.webView.evaluateJavascript(js) { result ->
-            if (result?.contains("missing") == true) {
-                val label = action.replaceFirstChar { it.uppercase() }
-                Toast.makeText(this, "Open the roster page first, then try $label", Toast.LENGTH_SHORT).show()
-            }
+
+        binding.webView.evaluateJavascript(js) {
+            binding.swipeRefresh.isRefreshing = false
         }
     }
 
@@ -287,10 +337,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        isForeground = true
         binding.webView.onResume()
+        updateShellVersionBadge()
+        val now = SystemClock.elapsedRealtime()
+        if (!isFirstLoad && now - lastForegroundRefreshAt > FOREGROUND_REFRESH_MIN_MS) {
+            lastForegroundRefreshAt = now
+            refreshShellAndWebApp("foreground", forcePageReload = false)
+        }
+        startForegroundRefreshLoop()
     }
 
     override fun onPause() {
+        isForeground = false
+        foregroundHandler.removeCallbacks(foregroundRefreshRunnable)
         binding.webView.onPause()
         super.onPause()
     }
@@ -310,6 +370,11 @@ class MainActivity : AppCompatActivity() {
             isFirstLoad = false
             showWebView()
             binding.progressBar.visibility = View.GONE
+            updateShellVersionBadge()
+            // Let the web/backend finish painting, then ask it to refresh its live/status data.
+            foregroundHandler.postDelayed({
+                if (isForeground) triggerWebAppDataRefresh("page-finished")
+            }, 750L)
             // Update toolbar subtitle with current path
             val path = Uri.parse(url).path ?: ""
             supportActionBar?.subtitle = if (path.isBlank() || path == "/") null else path

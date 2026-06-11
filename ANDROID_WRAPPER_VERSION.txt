@@ -1,5 +1,5 @@
-Android wrapper versionName: 2.0.6-b14
-Default/min local versionCode: 92
-Web/server target: 3.4.4-b72
+Android wrapper versionName: 2.0.7-b15
+Default/min local versionCode: 93
+Web/server target: loaded from backend UI
 Default URL: https://fantag.sidneyshelton.com/
 F-Droid CurrentVersion should follow Android wrapper versionName, not web/server version.
